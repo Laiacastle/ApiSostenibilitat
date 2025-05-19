@@ -13,11 +13,11 @@ namespace ApiSostenibilitat.Models
     public class Result
     {
         [Required]
-        public int UserId { get; set; }
+        public User UserId { get; set; }
         [Required]
-        public int GameId { get; set; }
+        public Game GameId { get; set; }
         [Required]
-        public int IdDiet { get; set; }
+        public Diet IdDiet { get; set; }
         [Key]
         [Required]
         public DateTime Date { get; set; }

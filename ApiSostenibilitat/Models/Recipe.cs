@@ -17,9 +17,9 @@ namespace ApiSostenibilitat.Models
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
-        
+
         //relacions
+        public List<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
         public List<Diet> Diets { get; set; } = new List<Diet>();
     }
 }

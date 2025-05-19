@@ -15,12 +15,12 @@ namespace ApiSostenibilitat.Models.DTOs
         public string UserName { get; set; } = string.Empty;
         public string Surname { get; set; }
         public double Weight { get; set; }
-        public ExerciciEnum Exercici { get; set; }
+        public ExerciciEnum Exercise { get; set; }
         public double HoursSleep { get; set; }
         public int Age { get; set; }
         //Relacions
         public List<string> Results { get; set; } = new List<string>();
-        public int Dieta { get; set; }
+        public int Diet { get; set; }
 
     }
 }
