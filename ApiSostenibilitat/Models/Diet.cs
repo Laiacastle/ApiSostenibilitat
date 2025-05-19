@@ -14,10 +14,11 @@ namespace ApiSostenibilitat.Models
         [Required]
         [Key]
         public int Id { get; set; }
-        public string Charcateristics {  get; set; }
+        public string Characteristics {  get; set; }
         
         //Relacions
         public User UserId { get; set; }  
-
+        public List<Recipe> Recipes { get; set; } = new List<Recipe>();
+        public List<Result> Results { get; set; } = new List<Result> ();
     }
 }

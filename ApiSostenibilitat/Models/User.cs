@@ -25,7 +25,7 @@ namespace ApiSostenibilitat.Models
         [Range(0, 1000, ErrorMessage = "Value for Weight must be bigger than 0.")]
         public double Weight { get; set; }
         [Required]
-        public ExerciciEnum Exercici { get; set; }
+        public ExerciciEnum Exercise { get; set; }
         [Required]
         public double HoursSleep { get; set; }
         [Required]
@@ -33,7 +33,7 @@ namespace ApiSostenibilitat.Models
 
         //Relacions
         public List<Result> Results { get; set; } = new List<Result>();
-        public Diet Dieta { get; set; }
+        public Diet Diet { get; set; }
 
     }
 }

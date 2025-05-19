@@ -16,6 +16,6 @@ namespace ApiSostenibilitat.Models.DTOs
         public List<Vitamin> Vitamins { get; set; } = new List<Vitamin>();
 
         //Relacions
-        public List<string> Recipes { get; set} = new List<string>();
+        public List<string> Recipes { get; set; } = new List<string>();
     }
 }
