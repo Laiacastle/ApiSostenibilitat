@@ -16,12 +16,12 @@ namespace ApiSostenibilitat.Models
         public int Id { get; set; }
         [Required]
         [Range(0, 1000000,
-        ErrorMessage = "Value for MinRes must be bigger than 0.")]
+        ErrorMessage = "Value for MinRes must be greater than 0.")]
         public double MinRes { get; set; }
 
         [Required]
         [Range(0.1, 999999,
-        ErrorMessage = "Value for MaxRes must be bigger than 0.1")]
+        ErrorMessage = "Value for MaxRes must be greater than 0.1")]
         public double MaxRes { get; set; }
         [Required]
         public string Name {  get; set; }
