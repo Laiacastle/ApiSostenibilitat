@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,27 +14,27 @@ namespace ApiSostenibilitat.Models
     [Table("User")]
     public class User : IdentityUser
     {
-        [Key]
-        [Required]
-        public int Id { get; set; }
+        
         [Required]
         public string Name { get; set; }
         public string Surname { get; set; }
         [EmailAddress]
         [Required]
         public string Email { get; set; }
-        [Range(0, 1000, ErrorMessage = "Value for Weight must be bigger than 0.")]
+        [Range(0, 1000, ErrorMessage = "Value for Weight must be greater than 0.")]
         public double Weight { get; set; }
         [Required]
         public ExerciciEnum Exercise { get; set; }
         [Required]
         public double HoursSleep { get; set; }
         [Required]
+        [Range(0, 99, ErrorMessage = "Value for Age must be greater than 0.")]
         public int Age { get; set; }
 
         //Relacions
         public List<Result> Results { get; set; } = new List<Result>();
-        public Diet Diet { get; set; }
+        //[ForeignKey("UserId")]
+        public Diet Diet { get; set; } = null!;
 
     }
 }

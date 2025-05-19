@@ -13,11 +13,17 @@ namespace ApiSostenibilitat.Models
     public class Result
     {
         [Required]
-        public User UserId { get; set; }
+        [ForeignKey("User")]
+        public string UserId { get; set; }
+        public User User { get; set; }
         [Required]
-        public Game GameId { get; set; }
+        [ForeignKey("Game")]
+        public int GameId { get; set; }
+        public Game Game { get; set; } = null!;
         [Required]
-        public Diet IdDiet { get; set; }
+        [ForeignKey("Diet")]
+        public int DietId { get; set; }
+        public Diet Diet { get; set; } = null!;
         [Key]
         [Required]
         public DateTime Date { get; set; }

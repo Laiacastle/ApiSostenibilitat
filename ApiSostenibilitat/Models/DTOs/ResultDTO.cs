@@ -9,7 +9,7 @@ namespace ApiSostenibilitat.Models.DTOs
 {
     public class ResultDTO
     {
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public int GameId { get; set; }
         public int IdDiet { get; set; }
         public DateTime Date { get; set; }

@@ -11,7 +11,7 @@ namespace ApiSostenibilitat.Models.DTOs
         public int Id { get; set; }
         public string Charcateristics { get; set; }
         //Relacions
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public List<int> Recipes { get; set; } = new List<int>();
     }
 }
