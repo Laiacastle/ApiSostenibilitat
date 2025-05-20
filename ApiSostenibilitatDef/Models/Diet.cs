@@ -20,7 +20,7 @@ namespace ApiSostenibilitat.Models
 
         //Relacions
         [ForeignKey("User")] //fk de USer
-        public string UserId {  get; set; }
+        public string? UserId {  get; set; }
         public User? User { get; set; }  
         public List<Recipe> Recipes { get; set; } = new List<Recipe>();
         public List<Result> Results { get; set; } = new List<Result>();
