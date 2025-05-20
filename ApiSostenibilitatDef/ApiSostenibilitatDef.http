@@ -1,0 +1,6 @@
+@ApiSostenibilitatDef_HostAddress = http://localhost:5259
+
+GET {{ApiSostenibilitatDef_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
