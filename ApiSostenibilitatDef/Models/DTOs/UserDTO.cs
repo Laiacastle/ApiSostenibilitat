@@ -22,7 +22,7 @@ namespace ApiSostenibilitat.Models.DTOs
         public int Age { get; set; }
         //Relacions
         public List<double> Results { get; set; } = new List<double>();
-        public int Diet { get; set; }
+        public string? Diet { get; set; }
 
     }
 }

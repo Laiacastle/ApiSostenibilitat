@@ -8,21 +8,22 @@ using System.Threading.Tasks;
 
 namespace ApiSostenibilitat.Models
 {
-    [Table("Diet")]
-    public class Diet
+    [Table("Ingredient")]
+    public class Ingredient
     {
         [Required]
         [Key]
-        public int Id { get; set; }
-        [Required]
+        public int Id { get; set; } 
         public string Name { get; set; }
-        public string Characteristics {  get; set; }
+        public List<string> EatForms { get; set; }
+        [Required]
+        public double Fiber {  get; set; }
+        [Required]
+        public double Calories {  get; set; }
+        public List<Vitamin> Vitamins { get; set; } = new List<Vitamin>();
 
         //Relacions
-        [ForeignKey("User")] //fk de USer
-        public string UserId {  get; set; }
-        public User? User { get; set; }  
         public List<Recipe> Recipes { get; set; } = new List<Recipe>();
-        public List<Result> Results { get; set; } = new List<Result>();
+
     }
 }

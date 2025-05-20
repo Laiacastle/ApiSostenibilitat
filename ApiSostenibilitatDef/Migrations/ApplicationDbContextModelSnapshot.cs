@@ -564,8 +564,7 @@ namespace ApiSostenibilitat.Migrations
 
             modelBuilder.Entity("ApiSostenibilitat.Models.User", b =>
                 {
-                    b.Navigation("Diet")
-                        .IsRequired();
+                    b.Navigation("Diet");
 
                     b.Navigation("Results");
                 });
