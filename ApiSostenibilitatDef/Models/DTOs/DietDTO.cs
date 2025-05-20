@@ -9,9 +9,11 @@ namespace ApiSostenibilitat.Models.DTOs
     public class DietDTO
     {
         public int Id { get; set; }
-        public string Charcateristics { get; set; }
+        public string Name { get; set; }
+        public string Characteristics { get; set; }
         //Relacions
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         public List<int> Recipes { get; set; } = new List<int>();
+        public List<DateTime> Results { get; set; } = new List<DateTime>();
     }
 }

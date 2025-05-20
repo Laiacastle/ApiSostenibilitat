@@ -37,11 +37,13 @@ namespace ApiSostenibilitat.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetAll()
         {
-            var users = await _context.Users.OfType<User>().Include(n => n.Results).ToListAsync();
+            var users = await _context.Users.OfType<User>().Include(n => n.Results).Include(n=>n.Diet).ToListAsync();
             if (users.Count == 0)
             {
                 return NotFound("Encara no hi han usuaris a la base de dades!");
             }
+            var u = users.Select(n => n.Diet);
+            var user = users.Select(n => new UserDTO { Diet = n.Diet != null ? n.Diet.Id.ToString() : "Sense dieta" });
             //mapeamos para q no haya el error de infinidad
             var userDTO = users.Select(n => new UserDTO
             {

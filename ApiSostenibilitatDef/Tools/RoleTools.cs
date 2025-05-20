@@ -7,7 +7,7 @@ namespace ApiSostenibilitatDef.Tools
         public static async Task CrearRolsInicials(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            string[] rols = { "Admin", "User" };
+            string[] rols = { "Admin", "User", "Doctor" };
             foreach (var rol in rols)
             {
                 if (!await roleManager.RoleExistsAsync(rol))
