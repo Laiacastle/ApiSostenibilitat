@@ -9,6 +9,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
     using Microsoft.IdentityModel.Tokens;
     using Microsoft.OpenApi.Models;
     using System.Text;
@@ -24,7 +25,15 @@
             
             //Afegim DbContext
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");Console.WriteLine(connectionString);
-            object value = builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+            object value = builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
+                connectionString,
+                sqlServerOptionsAction:
+                options => options.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: System.TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null)
+                )
+            );
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {

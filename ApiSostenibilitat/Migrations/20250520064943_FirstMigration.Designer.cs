@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiSostenibilitat.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250519104125_FirstMigration")]
+    [Migration("20250520064943_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -433,19 +433,19 @@ namespace ApiSostenibilitat.Migrations
                     b.HasOne("ApiSostenibilitat.Models.Diet", "Diet")
                         .WithMany("Results")
                         .HasForeignKey("DietId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ApiSostenibilitat.Models.Game", "Game")
                         .WithMany("Results")
                         .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ApiSostenibilitat.Models.User", "User")
                         .WithMany("Results")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Diet");
