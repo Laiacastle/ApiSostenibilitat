@@ -58,23 +58,26 @@ namespace ApiSostenibilitat.Data
                 .WithMany(n => n.Recipes);
 
             //ONE-TO-MANY
-            modelBuilder.Entity<Game>()
-            .HasMany(e => e.Results)
-            .WithOne(e => e.Game)
+            modelBuilder.Entity<Result>()
+            .HasOne(e => e.Game)
+            .WithMany(e => e.Results)
             .HasForeignKey(e => e.GameId)
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Diet>()
-            .HasMany(e => e.Results)
-            .WithOne(e => e.Diet)
+            modelBuilder.Entity<Result>()
+            .HasOne(e => e.Diet)
+            .WithMany(e => e.Results)
             .HasForeignKey(e => e.DietId)
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<User>()
-            .HasMany(e => e.Results)
-            .WithOne(e => e.User)
+            modelBuilder.Entity<Result>()
+            .HasOne(e => e.User)
+            .WithMany(e => e.Results)
             .HasForeignKey(e => e.UserId)
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
