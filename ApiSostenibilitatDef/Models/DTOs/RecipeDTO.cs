@@ -11,9 +11,8 @@ namespace ApiSostenibilitat.Models.DTOs
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
-
         //Relacions
+        public List<string> Ingredients { get; set; } = new List<string>();
         public List<int> Diets { get; set; } = new List<int>();
     }
 }

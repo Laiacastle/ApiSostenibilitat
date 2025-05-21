@@ -17,6 +17,7 @@ namespace ApiSostenibilitat.Data
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<Result> Results { get; set; }
+        public DbSet<Vitamin> Vitamins { get; set; }
         
 
         

@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ApiSostenibilitat.Models
@@ -29,6 +30,7 @@ namespace ApiSostenibilitat.Models
         public int Age { get; set; }
 
         //Relacions
+        [JsonIgnore]
         public List<Result> Results { get; set; } = new List<Result>();
         //[ForeignKey("UserId")]
         public Diet? Diet { get; set; } = null!;
