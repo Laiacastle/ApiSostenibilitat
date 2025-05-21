@@ -79,6 +79,99 @@ namespace ApiSostenibilitat.Data
             .HasForeignKey(e => e.UserId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
+
+            //DataSEEd
+            modelBuilder.Entity<Vitamin>().HasData(
+                new Vitamin { Id = 1, Name = "A" },
+                new Vitamin { Id = 2, Name = "C" },
+                new Vitamin { Id = 3, Name = "K" },
+                new Vitamin { Id = 4, Name = "B6"},
+                new Vitamin { Id = 5, Name = "E" },
+                new Vitamin { Id = 6, Name = "D" }
+            );
+
+            modelBuilder.Entity<Ingredient>().HasData(
+                new Ingredient
+                {
+                    Id = 1,
+                    Name = "Pastanaga",
+                    Fiber = 2.8,
+                    Calories = 41,
+                    EatForms = ["Crua", "Cuita", "Ratllada", "Batuda"]
+                },
+                new Ingredient
+                {
+                    Id = 2,
+                    Name = "Espinaca",
+                    Fiber = 2.2,
+                    Calories = 23,
+                    EatForms = ["Cuita"]
+                },
+                new Ingredient
+                {
+                    Id = 3,
+                    Name = "Plátan",
+                    Fiber = 2.6,
+                    Calories = 89,
+                    EatForms = ["Cru", "Fregit", "Batut"]
+                },
+                new Ingredient
+                {
+                    Id = 4,
+                    Name = "Aguacate",
+                    Fiber = 6.7,
+                    Calories = 160,
+                    EatForms = ["Cru", "Batut"]
+                },
+                new Ingredient
+                {
+                    Id = 5,
+                    Name = "Brócoli",
+                    Fiber = 2.6,
+                    Calories = 34,
+                    EatForms = ["Cuita", "Batut"]
+                },
+                new Ingredient
+                {
+                    Id = 6,
+                    Name = "Tomaquet",
+                    Fiber = 1.2,
+                    Calories = 18,
+                    EatForms = ["Cru", "Cuinat", "Batut"]
+                },
+                new Ingredient
+                {
+                    Id = 7,
+                    Name = "Almendra",
+                    Fiber = 12.5,
+                    Calories = 579,
+                    EatForms = ["Crua", "Ratllada"]
+                }
+            );
+
+            
+            modelBuilder.Entity<Vitamin>()
+                .HasMany(v => v.Ingredients)
+                .WithMany(i => i.Vitamins);
+
+            modelBuilder.Entity<Ingredient>()
+            .HasMany(i => i.Vitamins)
+            .WithMany(i=>i.Ingredients)
+            .UsingEntity(j => j.HasData(
+                new { IngredientsId = 1, VitaminsId = 1 }, // Zanahoria - A
+                new { IngredientsId = 1, VitaminsId = 2 }, // Zanahoria - C
+                new { IngredientsId = 2, VitaminsId = 2 }, // Espinaca - C
+                new { IngredientsId = 2, VitaminsId = 3 }, // Espinaca - K
+                new { IngredientsId = 3, VitaminsId = 4 }, // Plátano - B6
+                new { IngredientsId = 4, VitaminsId = 5 }, // Aguacate - E
+                new { IngredientsId = 5, VitaminsId = 2 }, // Brócoli - C
+                new { IngredientsId = 5, VitaminsId = 3 }, // Brocoli - K
+                new { IngredientsId = 6, VitaminsId = 1 }, // Tomate - A
+                new { IngredientsId = 6, VitaminsId = 2 }, // Tomate - C
+                new { IngredientsId = 7, VitaminsId = 5 }, // Almendra - E
+                new { IngredientsId = 7, VitaminsId = 6 }  // Almendra - D
+            ));
+
         }
     }
 }
