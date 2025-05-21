@@ -2,7 +2,6 @@
 {
     using ApiSostenibilitat.Data;
     using ApiSostenibilitat.Models;
-    using ApiSostenibilitatDef.Data;
     using ApiSostenibilitatDef.Tools;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -14,6 +13,7 @@
     using Microsoft.Extensions.Options;
     using Microsoft.IdentityModel.Tokens;
     using Microsoft.OpenApi.Models;
+    using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
     using System.Text;
 
     public class Program
@@ -152,31 +152,74 @@
             {
                 var services = scope.ServiceProvider;
 
-                // Llamamos al método para crear los roles iniciales
+                // Crear roles iniciales
                 await RoleTools.CrearRolsInicials(services);
 
-                // Llamamos al método de seed para los usuarios
                 var userManager = services.GetRequiredService<UserManager<User>>();
-                SeedData.Initialize(services, userManager);  // Esto es para hacer el seeding de usuarios
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                // Verifica si el usuario ya existe
+                var existingUser = await userManager.FindByEmailAsync("admin@gmail.com");
+
+                if (existingUser == null)
+                {
+                    Console.WriteLine("Creando usuario admin...");
+
+                    var adminUser = new User
+                    {
+                        UserName = "Admin",
+                        Email = "admin@gmail.com",
+                        Name = "Admin",
+                        Surname = "Admin",
+                        Weight = 68,
+                        Exercise = ExerciciEnum.Molt,
+                        HoursSleep = 8,
+                        Age = 23
+                    };
+
+                    var createResult = await userManager.CreateAsync(adminUser, "Itb2025@");
+
+                    if (!createResult.Succeeded)
+                    {
+                        foreach (var error in createResult.Errors)
+                        {
+                            Console.WriteLine($"❌ Error creando usuario admin: {error.Code} - {error.Description}");
+                        }
+                    }
+                    else
+                    {
+                        using var innerScope = app.Services.CreateScope();
+                        var scopedUserManager = innerScope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                        var scopedRoleManager = innerScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                        var newUser = await scopedUserManager.FindByEmailAsync("admin@gmail.com");
+
+                        if (newUser != null && await scopedRoleManager.RoleExistsAsync("Admin"))
+                        {
+                            await scopedUserManager.AddToRoleAsync(newUser, "Admin");
+                        }
+                    }
+                }
             }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                {
+                    app.MapOpenApi();
+                    app.UseSwagger();
+                    app.UseSwaggerUI();
+                }
+
+                app.UseHttpsRedirection();
+                app.UseAuthentication();
+                app.UseAuthorization();
+
+                app.UseCors();
+
+                app.MapControllers();
+
+                app.Run();
             }
-
-            app.UseHttpsRedirection();
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseCors();
-
-            app.MapControllers();
-
-            app.Run();
         }
     }
-}
+

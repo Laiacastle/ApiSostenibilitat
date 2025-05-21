@@ -172,6 +172,8 @@ namespace ApiSostenibilitat.Data
                 new { IngredientsId = 7, VitaminsId = 6 }  // Almendra - D
             ));
 
+            
+
         }
     }
 }
