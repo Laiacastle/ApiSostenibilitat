@@ -2,6 +2,7 @@
 {
     using ApiSostenibilitat.Data;
     using ApiSostenibilitat.Models;
+    using ApiSostenibilitatDef.Data;
     using ApiSostenibilitatDef.Tools;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -14,19 +15,19 @@
     using Microsoft.IdentityModel.Tokens;
     using Microsoft.OpenApi.Models;
     using System.Text;
+
     public class Program
     {
-
         public static async Task Main(string[] args)
         {
-            
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            
+
             //Afegim DbContext
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");Console.WriteLine(connectionString);
-            object value = builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            Console.WriteLine(connectionString);
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
                 connectionString,
                 sqlServerOptionsAction:
                 options => options.EnableRetryOnFailure(
@@ -95,7 +96,7 @@
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-                options.JsonSerializerOptions.MaxDepth = 64;  
+                options.JsonSerializerOptions.MaxDepth = 64;
             });
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -129,6 +130,7 @@
                         }
                 });
             });
+
             //-------------------------------------------------SIGNALR----------------------------
             builder.Services.AddCors(options =>
             {
@@ -149,7 +151,13 @@
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
+
+                // Llamamos al método para crear los roles iniciales
                 await RoleTools.CrearRolsInicials(services);
+
+                // Llamamos al método de seed para los usuarios
+                var userManager = services.GetRequiredService<UserManager<User>>();
+                SeedData.Initialize(services, userManager);  // Esto es para hacer el seeding de usuarios
             }
 
             // Configure the HTTP request pipeline.
@@ -164,10 +172,7 @@
             app.UseAuthentication();
             app.UseAuthorization();
 
-
             app.UseCors();
-
-
 
             app.MapControllers();
 
@@ -175,5 +180,3 @@
         }
     }
 }
-
-

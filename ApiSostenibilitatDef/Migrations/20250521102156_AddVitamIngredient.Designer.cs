@@ -4,6 +4,7 @@ using ApiSostenibilitat.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiSostenibilitat.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521102156_AddVitamIngredient")]
+    partial class AddVitamIngredient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -380,13 +383,13 @@ namespace ApiSostenibilitat.Migrations
 
             modelBuilder.Entity("IngredientVitamin", b =>
                 {
-                    b.Property<int>("IngredientsId")
+                    b.Property<int>("IngredientId")
                         .HasColumnType("int");
 
                     b.Property<int>("VitaminsId")
                         .HasColumnType("int");
 
-                    b.HasKey("IngredientsId", "VitaminsId");
+                    b.HasKey("IngredientId", "VitaminsId");
 
                     b.HasIndex("VitaminsId");
 
@@ -395,62 +398,62 @@ namespace ApiSostenibilitat.Migrations
                     b.HasData(
                         new
                         {
-                            IngredientsId = 1,
+                            IngredientId = 1,
                             VitaminsId = 1
                         },
                         new
                         {
-                            IngredientsId = 1,
+                            IngredientId = 1,
                             VitaminsId = 2
                         },
                         new
                         {
-                            IngredientsId = 2,
+                            IngredientId = 2,
                             VitaminsId = 2
                         },
                         new
                         {
-                            IngredientsId = 2,
+                            IngredientId = 2,
                             VitaminsId = 3
                         },
                         new
                         {
-                            IngredientsId = 3,
+                            IngredientId = 3,
                             VitaminsId = 4
                         },
                         new
                         {
-                            IngredientsId = 4,
+                            IngredientId = 4,
                             VitaminsId = 5
                         },
                         new
                         {
-                            IngredientsId = 5,
+                            IngredientId = 5,
                             VitaminsId = 2
                         },
                         new
                         {
-                            IngredientsId = 5,
+                            IngredientId = 5,
                             VitaminsId = 3
                         },
                         new
                         {
-                            IngredientsId = 6,
+                            IngredientId = 6,
                             VitaminsId = 1
                         },
                         new
                         {
-                            IngredientsId = 6,
+                            IngredientId = 6,
                             VitaminsId = 2
                         },
                         new
                         {
-                            IngredientsId = 7,
+                            IngredientId = 7,
                             VitaminsId = 5
                         },
                         new
                         {
-                            IngredientsId = 7,
+                            IngredientId = 7,
                             VitaminsId = 6
                         });
                 });
@@ -658,7 +661,7 @@ namespace ApiSostenibilitat.Migrations
                 {
                     b.HasOne("ApiSostenibilitat.Models.Ingredient", null)
                         .WithMany()
-                        .HasForeignKey("IngredientsId")
+                        .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
