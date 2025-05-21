@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ApiSostenibilitat.Models
@@ -20,6 +21,7 @@ namespace ApiSostenibilitat.Models
 
         //relacions
         public List<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
+        [JsonIgnore]
         public List<Diet> Diets { get; set; } = new List<Diet>();
     }
 }

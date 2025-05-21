@@ -15,6 +15,6 @@ namespace ApiSostenibilitat.Models.DTOs
         public string Name { get; set; }
 
         //relacions
-        public List<double> Results { get; set; } = new List<double>();
+        public List<DateTime> Results { get; set; } = new List<DateTime>();
     }
 }

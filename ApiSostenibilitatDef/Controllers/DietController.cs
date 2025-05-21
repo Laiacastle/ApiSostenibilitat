@@ -15,7 +15,7 @@ namespace ApiSostenibilitatDef.Controllers
         private readonly ApplicationDbContext _context;
         public DietController(ApplicationDbContext context) { _context = context; }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game>>> GetAll()
+        public async Task<ActionResult<IEnumerable<Diet>>> GetAll()
         {
             var diets = await _context.Diets.Include(n => n.Results).Include(d=>d.Recipes).ToListAsync();
             if (diets.Count == 0)
@@ -23,7 +23,7 @@ namespace ApiSostenibilitatDef.Controllers
                 return NotFound("Encara no hi han dietes a la base de dades!");
             }
 
-            // M apeamos para pasarlo al dto para evitar el error de infinidad
+            // Mapeamos para pasarlo al dto para evitar el error de infinidad
             var dietDTO = diets.Select(n => new DietDTO
             {
                 Id = n.Id,
@@ -43,7 +43,7 @@ namespace ApiSostenibilitatDef.Controllers
             var diet = await _context.Diets.Include(n => n.Results).Include(r=>r.Recipes).FirstOrDefaultAsync(n => n.Id == id);
             if (diet == null)
             {
-                return NotFound("No s'ha trobat el joc");
+                return NotFound("No s'ha trobat la dieta");
             }
             var dietDTO = new DietDTO
             {
@@ -76,7 +76,7 @@ namespace ApiSostenibilitatDef.Controllers
                 var result = await _context.Results.FindAsync(i);
                 if (result != null)
                 {
-                    diet.Recipes.Add(await _context.Recipes.FindAsync(result));
+                    diet.Results.Add(await _context.Results.FindAsync(result));
                 }
             }
 
@@ -111,25 +111,47 @@ namespace ApiSostenibilitatDef.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<Diet>> Update(DietDTO dietDTO, int id)
         {
+            var diet = await _context.Diets.Include(i => i.Recipes).Include(i => i.Results).FirstOrDefaultAsync(n => n.Id == id);
+
+            if (diet == null)
+            {
+                return NotFound("L'ingredient no existeix!");
+            }
+
+
+            diet.Name = dietDTO.Name;
+            diet.Characteristics = dietDTO.Characteristics;
+            diet.UserId = dietDTO.UserId;
+
+
+            diet.Recipes.Clear();
+            foreach (var rId in dietDTO.Recipes)
+            {
+                var result = await _context.Recipes.FindAsync(rId);
+                if (result != null)
+                {
+                    diet.Recipes.Add(result);
+                }
+            }
+
+            diet.Results.Clear();
+            foreach (var rId in dietDTO.Results)
+            {
+                var result = await _context.Results.FindAsync(rId);
+                if (result != null)
+                {
+                    diet.Results.Add(result);
+                }
+            }
+
             try
             {
-                 var diet = await _context.Diets.FirstOrDefaultAsync(n => n.Id == dietDTO.Id);
-            }
-            catch
-            {
-                return BadRequest("La dieta no existeix!");
-            }
-           
-            var newDiet = new Diet { Id = id, Name = dietDTO.Name, Characteristics = dietDTO.Characteristics != null ? dietDTO.Characteristics : "no info", UserId = dietDTO.UserId };
-            try
-            {
-                _context.Diets.Update(newDiet);
                 await _context.SaveChangesAsync();
-                return Ok(newDiet);
+                return Ok(diet);
             }
             catch (DbUpdateException)
             {
-                return BadRequest("no s'ha pogut fer l'update");
+                return BadRequest("No s'ha pogut fer l'update");
             }
         }
         //[Authorize]

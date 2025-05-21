@@ -13,9 +13,9 @@ namespace ApiSostenibilitat.Models.DTOs
         public List<string> EatForms { get; set; }
         public double Fiber { get; set; }
         public double Calories { get; set; }
-        public List<Vitamin> Vitamins { get; set; } = new List<Vitamin>();
+        public List<string> Vitamins { get; set; } = new List<string>();
 
         //Relacions
-        public List<string> Recipes { get; set; } = new List<string>();
+        public List<int> Recipes { get; set; } = new List<int>();
     }
 }
