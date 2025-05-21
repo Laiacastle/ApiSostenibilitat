@@ -95,7 +95,7 @@
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-                options.JsonSerializerOptions.MaxDepth = 64;
+                options.JsonSerializerOptions.MaxDepth = 64;  
             });
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
