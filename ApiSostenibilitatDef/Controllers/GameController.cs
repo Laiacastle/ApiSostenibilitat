@@ -54,7 +54,7 @@ namespace ApiSostenibilitatDef.Controllers
             };
             return Ok(gameDTO);
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Game>> Add(GameDTO gameDTO)
         {
@@ -82,7 +82,7 @@ namespace ApiSostenibilitatDef.Controllers
                 return BadRequest("Dades erroneas");
             }
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Game>> Delete(int id)
         {
@@ -98,7 +98,7 @@ namespace ApiSostenibilitatDef.Controllers
                 return BadRequest("No s'ha pogut esborrar el joc");
             }
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult<Game>> Update(GameDTO gameDTO, int id)
         {
