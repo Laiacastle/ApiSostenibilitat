@@ -158,12 +158,13 @@
                 var userManager = services.GetRequiredService<UserManager<User>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-                // Verifica si el usuario ya existe
-                var existingUser = await userManager.FindByEmailAsync("admin@gmail.com");
-
-                if (existingUser == null)
+                // Verifica els usuaris ya existeixen
+                var existingUser = await userManager.FindByEmailAsync("user@gmail.com");
+                var existingAdmin = await userManager.FindByEmailAsync("admin@gmail.com");
+                var existingDoctor = await userManager.FindByEmailAsync("doctor@gmail.com");
+                if (existingAdmin == null)
                 {
-                    Console.WriteLine("Creando usuario admin...");
+                    Console.WriteLine("Creant usuari admin...");
 
                     var adminUser = new User
                     {
@@ -183,7 +184,7 @@
                     {
                         foreach (var error in createResult.Errors)
                         {
-                            Console.WriteLine($"❌ Error creando usuario admin: {error.Code} - {error.Description}");
+                            Console.WriteLine($"Error creant usuari admin: {error.Code} - {error.Description}");
                         }
                     }
                     else
@@ -200,26 +201,106 @@
                         }
                     }
                 }
-            }
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+                if (existingUser == null)
                 {
-                    app.MapOpenApi();
-                    app.UseSwagger();
-                    app.UseSwaggerUI();
+                    Console.WriteLine("Creant usuari...");
+
+                    var user = new User
+                    {
+                        UserName = "User",
+                        Email = "user@gmail.com",
+                        Name = "User",
+                        Surname = "User",
+                        Weight = 50,
+                        Exercise = ExerciciEnum.Poc,
+                        HoursSleep = 8,
+                        Age = 19
+                    };
+
+                    var createResult = await userManager.CreateAsync(user, "Itb2025@");
+
+                    if (!createResult.Succeeded)
+                    {
+                        foreach (var error in createResult.Errors)
+                        {
+                            Console.WriteLine($"Error creant usuari: {error.Code} - {error.Description}");
+                        }
+                    }
+                    else
+                    {
+                        using var innerScope = app.Services.CreateScope();
+                        var scopedUserManager = innerScope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                        var scopedRoleManager = innerScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                        var newUser = await scopedUserManager.FindByEmailAsync("user@gmail.com");
+
+                        if (newUser != null && await scopedRoleManager.RoleExistsAsync("User"))
+                        {
+                            await scopedUserManager.AddToRoleAsync(newUser, "User");
+                        }
+                    }
                 }
 
-                app.UseHttpsRedirection();
-                app.UseAuthentication();
-                app.UseAuthorization();
+                if (existingDoctor == null)
+                {
+                    Console.WriteLine("Creant usuari doctor...");
 
-                app.UseCors();
+                    var docUser = new User
+                    {
+                        UserName = "Doctor",
+                        Email = "doctor@gmail.com",
+                        Name = "Doctor",
+                        Surname = "doctor",
+                        Weight = 90,
+                        Exercise = ExerciciEnum.Poc,
+                        HoursSleep = 9,
+                        Age = 42
+                    };
 
-                app.MapControllers();
+                    var createResult = await userManager.CreateAsync(docUser, "Itb2025@");
 
-                app.Run();
+                    if (!createResult.Succeeded)
+                    {
+                        foreach (var error in createResult.Errors)
+                        {
+                            Console.WriteLine($"=Error creant usuari doctor: {error.Code} - {error.Description}");
+                        }
+                    }
+                    else
+                    {
+                        using var innerScope = app.Services.CreateScope();
+                        var scopedUserManager = innerScope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                        var scopedRoleManager = innerScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                        var newUser = await scopedUserManager.FindByEmailAsync("doctor@gmail.com");
+
+                        if (newUser != null && await scopedRoleManager.RoleExistsAsync("Doctor"))
+                        {
+                            await scopedUserManager.AddToRoleAsync(newUser, "Doctor");
+                        }
+                    }
+                }
+
+                    // Configure the HTTP request pipeline.
+                    if (app.Environment.IsDevelopment())
+                    {
+                        app.MapOpenApi();
+                        app.UseSwagger();
+                        app.UseSwaggerUI();
+                    }
+
+                    app.UseHttpsRedirection();
+                    app.UseAuthentication();
+                    app.UseAuthorization();
+
+                    app.UseCors();
+
+                    app.MapControllers();
+
+                    app.Run();
+                }
             }
         }
     }
+
 
