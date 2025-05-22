@@ -67,7 +67,7 @@ namespace ApiSostenibilitatDef.Controllers
                 var result = await _context.Results.FindAsync(i);
                 if (result != null)
                 {
-                    game.Results.Add(await _context.Results.FindAsync(result));
+                    game.Results.Add(result);
                 }
             }
 

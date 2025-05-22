@@ -50,9 +50,9 @@ namespace ApiSostenibilitat.Controllers
                 Id = n.Id,
                 Name = n.Name,
                 Surname = n.Surname,
-                Email = n.Email,
-                Password = n.PasswordHash,
-                UserName = n.UserName,
+                Email = n.Email != null ? n.Email : "Error",
+                Password = n.PasswordHash != null ? n.PasswordHash : "Error",
+                UserName = n.UserName != null  ? n.UserName: n.Name,
                 Weight = n.Weight,
                 Exercise = n.Exercise.ToString(),
                 HoursSleep = n.HoursSleep,
@@ -144,7 +144,7 @@ namespace ApiSostenibilitat.Controllers
             }
             var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Name, user.UserName != null ? user.UserName : user.Name),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
             var roles = await _userManager.GetRolesAsync(user);
