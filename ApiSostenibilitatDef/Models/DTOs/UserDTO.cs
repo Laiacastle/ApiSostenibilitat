@@ -21,7 +21,7 @@ namespace ApiSostenibilitat.Models.DTOs
         public double HoursSleep { get; set; }
         public int Age { get; set; }
         //Relacions
-        public List<double> Results { get; set; } = new List<double>();
+        public List<int> Results { get; set; } = new List<int>();
         public string? Diet { get; set; }
 
     }

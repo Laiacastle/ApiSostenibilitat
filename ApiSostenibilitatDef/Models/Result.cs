@@ -38,7 +38,7 @@ namespace ApiSostenibilitat.Models
 
         [Required]
         [Range(0, 9999, ErrorMessage = "The result must be greater than 0!")]
-        public double FiResult { get; set; }
+        public int FiResult { get; set; }
 
         
     }

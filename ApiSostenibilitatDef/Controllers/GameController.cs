@@ -30,7 +30,7 @@ namespace ApiSostenibilitatDef.Controllers
                 MinRes = n.MinRes,
                 MaxRes = n.MaxRes,
                 Name = n.Name,
-                Results = n.Results.Select(r => r.Date).ToList()
+                Results = n.Results.Select(r => r.Id).ToList()
             }).ToList();
 
             return Ok(gameDTO);
@@ -50,7 +50,7 @@ namespace ApiSostenibilitatDef.Controllers
                 Name = game.Name,
                 MinRes = game.MinRes,
                 MaxRes = game.MaxRes,
-                Results = game.Results.Select(r => r.Date).ToList()
+                Results = game.Results.Select(r => r.Id).ToList()
             };
             return Ok(gameDTO);
         }

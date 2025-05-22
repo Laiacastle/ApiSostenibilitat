@@ -10,11 +10,11 @@ namespace ApiSostenibilitat.Models.DTOs
     public class GameDTO
     {
         public int Id { get; set; }
-        public double MinRes { get; set; }
-        public double MaxRes { get; set; }
+        public int MinRes { get; set; }
+        public int MaxRes { get; set; }
         public string Name { get; set; }
 
         //relacions
-        public List<DateTime> Results { get; set; } = new List<DateTime>();
+        public List<int> Results { get; set; } = new List<int>();
     }
 }

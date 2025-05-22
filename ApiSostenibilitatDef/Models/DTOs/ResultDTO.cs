@@ -14,6 +14,6 @@ namespace ApiSostenibilitat.Models.DTOs
         public int GameId { get; set; }
         public int DietId { get; set; }
         public DateTime Date { get; set; }
-        public double FiResult {get;set;}
+        public int FiResult {get;set;}
     }
 }
