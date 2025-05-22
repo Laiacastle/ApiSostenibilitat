@@ -173,7 +173,7 @@ namespace ApiSostenibilitat.Data
                 .HasData(new
                 {
                     Id = 1,
-                    Name = "Reflexes",
+                    Type = "Reflexes",
                     MinRes = 375,
                     MaxRes = 275,
 
@@ -181,14 +181,14 @@ namespace ApiSostenibilitat.Data
                 new
                 {
                     Id = 2,
-                    Name = "Oida",
+                    Type = "Oida",
                     MinRes = 20,
                     MaxRes = 20000
                 },
                 new
                 {
                     Id = 3,
-                    Name = "Vista",
+                    Type = "Vista",
                     MinRes = 50000000,
                     MaxRes = 100000000
                 });
