@@ -25,7 +25,7 @@ namespace ApiSostenibilitat.Models
         ErrorMessage = "Value for MaxRes must be greater than 0.1")]
         public int MaxRes { get; set; }
         [Required]
-        public string Name {  get; set; }
+        public string Type {  get; set; }
 
         //relacions
         [JsonIgnore]

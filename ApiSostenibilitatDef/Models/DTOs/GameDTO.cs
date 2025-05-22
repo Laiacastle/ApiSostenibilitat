@@ -12,7 +12,7 @@ namespace ApiSostenibilitat.Models.DTOs
         public int Id { get; set; }
         public int MinRes { get; set; }
         public int MaxRes { get; set; }
-        public string Name { get; set; }
+        public string Type { get; set; }
 
         //relacions
         public List<int> Results { get; set; } = new List<int>();
