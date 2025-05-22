@@ -169,7 +169,29 @@ namespace ApiSostenibilitat.Data
                 new { IngredientsId = 7, VitaminsId = 6 }  // Almendra - D
             ));
 
-            
+            modelBuilder.Entity<Game>()
+                .HasData(new
+                {
+                    Id = 1,
+                    Name = "Reflexes",
+                    MinRes = 375,
+                    MaxRes = 275,
+
+                },
+                new
+                {
+                    Id = 2,
+                    Name = "Oida",
+                    MinRes = 20,
+                    MaxRes = 20000
+                },
+                new
+                {
+                    Id = 3,
+                    Name = "Vista",
+                    MinRes = 50000000,
+                    MaxRes = 100000000
+                });
 
         }
     }
