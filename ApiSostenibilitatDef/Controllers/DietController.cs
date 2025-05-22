@@ -17,7 +17,7 @@ namespace ApiSostenibilitatDef.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Diet>>> GetAll()
         {
-            var diets = await _context.Diets.Include(n => n.Results).Include(d=>d.Recipes).ToListAsync();
+            var diets = await _context.Diets.Include(n => n.Results).Include(d => d.Recipes).ToListAsync();
             if (diets.Count == 0)
             {
                 return NotFound("Encara no hi han dietes a la base de dades!");
@@ -40,7 +40,7 @@ namespace ApiSostenibilitatDef.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Diet>> GetById(int id)
         {
-            var diet = await _context.Diets.Include(n => n.Results).Include(r=>r.Recipes).FirstOrDefaultAsync(n => n.Id == id);
+            var diet = await _context.Diets.Include(n => n.Results).Include(r => r.Recipes).FirstOrDefaultAsync(n => n.Id == id);
             if (diet == null)
             {
                 return NotFound("No s'ha trobat la dieta");
@@ -56,7 +56,7 @@ namespace ApiSostenibilitatDef.Controllers
             };
             return Ok(dietDTO);
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPost]
         public async Task<ActionResult<Diet>> Add(DietDTO dietDTO)
         {
@@ -91,7 +91,7 @@ namespace ApiSostenibilitatDef.Controllers
                 return BadRequest("Dades erroneas");
             }
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Diet>> Delete(int id)
         {
@@ -107,7 +107,7 @@ namespace ApiSostenibilitatDef.Controllers
                 return BadRequest("No s'ha pogut esborrar la dieta");
             }
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPut("{id}")]
         public async Task<ActionResult<Diet>> Update(DietDTO dietDTO, int id)
         {
@@ -154,7 +154,7 @@ namespace ApiSostenibilitatDef.Controllers
                 return BadRequest("No s'ha pogut fer l'update");
             }
         }
-        //[Authorize]
+        [Authorize]
         [HttpPut("/Asign/{id}/{idUser}")]
         public async Task<ActionResult> AsignDiet(int id, string idUser)
         {
@@ -187,7 +187,7 @@ namespace ApiSostenibilitatDef.Controllers
             }
             catch (DbUpdateException)
             {
-                return BadRequest("No s'ha pogut asignarl la dieta");
+                return BadRequest("No s'ha pogut asignar la dieta");
             }
         }
     }
