@@ -29,7 +29,7 @@ namespace ApiSostenibilitatDef.Controllers
                 Id = n.Id,
                 MinRes = n.MinRes,
                 MaxRes = n.MaxRes,
-                Name = n.Name,
+                Type = n.Type,
                 Results = n.Results.Select(r => r.Id).ToList()
             }).ToList();
 
@@ -47,7 +47,7 @@ namespace ApiSostenibilitatDef.Controllers
             var gameDTO = new GameDTO
             {
                 Id = game.Id,
-                Name = game.Name,
+                Type = game.Type,
                 MinRes = game.MinRes,
                 MaxRes = game.MaxRes,
                 Results = game.Results.Select(r => r.Id).ToList()
@@ -58,7 +58,7 @@ namespace ApiSostenibilitatDef.Controllers
         [HttpPost]
         public async Task<ActionResult<Game>> Add(GameDTO gameDTO)
         {
-            var game = new Game { Name = gameDTO.Name, MinRes = gameDTO .MinRes, MaxRes = gameDTO .MaxRes};
+            var game = new Game { Type = gameDTO.Type, MinRes = gameDTO .MinRes, MaxRes = gameDTO .MaxRes};
 
             //Afegim els results 
             
@@ -110,7 +110,7 @@ namespace ApiSostenibilitatDef.Controllers
             }
 
 
-            game.Name = gameDTO.Name;
+            game.Type = gameDTO.Type;
             game.MinRes = gameDTO.MinRes;
             game.MaxRes = gameDTO.MaxRes;
 
