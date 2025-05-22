@@ -70,7 +70,7 @@ namespace ApiSostenibilitatDef.Controllers
                 var result = await _context.Vitamins.FirstOrDefaultAsync(n=>n.Name==i);
                 if (result != null)
                 {
-                    ingredient.Vitamins.Add(await _context.Vitamins.FindAsync(result));
+                    ingredient.Vitamins.Add(result);
                 }
             }
             foreach (var i in ingDTO.Recipes)
@@ -78,7 +78,7 @@ namespace ApiSostenibilitatDef.Controllers
                 var result = await _context.Recipes.FindAsync(i);
                 if (result != null)
                 {
-                    ingredient.Recipes.Add(await _context.Recipes.FindAsync(result));
+                    ingredient.Recipes.Add(result);
                 }
             }
 

@@ -60,11 +60,12 @@ namespace ApiSostenibilitatDef.Controllers
         public async Task<ActionResult<Result>> Add(ResultDTO resultDTO)
         {
             var result = new Result { UserId = resultDTO.UserId, GameId = resultDTO.GameId, DietId = resultDTO.DietId, FiResult = resultDTO.FiResult, Date = DateTime.Now };
-            result.User = await _context.Users.FirstOrDefaultAsync(n => n.Id == resultDTO.UserId);
-            result.Game = await _context.Games.FirstOrDefaultAsync(n => n.Id == resultDTO.GameId);
-            result.Diet = await _context.Diets.FirstOrDefaultAsync(n => n.Id == resultDTO.DietId);
             try
             {
+                result.User = await _context.Users.FirstOrDefaultAsync(n => n.Id == resultDTO.UserId);
+                result.Game = await _context.Games.FirstOrDefaultAsync(n => n.Id == resultDTO.GameId);
+                result.Diet = await _context.Diets.FirstOrDefaultAsync(n => n.Id == resultDTO.DietId);
+            
                 _context.Results.Add(result);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetAll), result);
@@ -106,12 +107,12 @@ namespace ApiSostenibilitatDef.Controllers
             result.DietId = resultDTO.DietId;
             
             result.FiResult = resultDTO.FiResult;
-            result.User = await _context.Users.FirstOrDefaultAsync(n => n.Id == resultDTO.UserId);
-            result.Game = await _context.Games.FirstOrDefaultAsync(n => n.Id == resultDTO.GameId);
-            result.Diet = await _context.Diets.FirstOrDefaultAsync(n => n.Id == resultDTO.DietId);
-
             try
             {
+                result.User = await _context.Users.FirstOrDefaultAsync(n => n.Id == resultDTO.UserId);
+                result.Game = await _context.Games.FirstOrDefaultAsync(n => n.Id == resultDTO.GameId);
+                result.Diet = await _context.Diets.FirstOrDefaultAsync(n => n.Id == resultDTO.DietId);
+            
                 await _context.SaveChangesAsync();
                 return Ok(result);
             }
