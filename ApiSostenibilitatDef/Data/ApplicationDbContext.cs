@@ -2,13 +2,10 @@
 using ApiSostenibilitat.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System.Reflection.Metadata;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ApiSostenibilitat.Data
 {
+
     public class ApplicationDbContext: IdentityDbContext<User>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
