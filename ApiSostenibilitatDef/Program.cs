@@ -2,6 +2,7 @@
 {
     using ApiSostenibilitat.Data;
     using ApiSostenibilitat.Models;
+    using ApiSostenibilitat.Models.DTOs;
     using ApiSostenibilitatDef.Tools;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -166,18 +167,25 @@
                 {
                     Console.WriteLine("Creant usuari admin...");
 
-                    var adminUser = new User
+                    var model = new RegisterDTO
                     {
                         UserName = "Admin",
                         Email = "admin@gmail.com",
                         Name = "Admin",
                         Surname = "Admin",
                         Weight = 68,
-                        Exercise = ExerciciEnum.Molt,
+                        Exercise = "Molt",
                         HoursSleep = 8,
                         Age = 23
                     };
-
+                    var adminUser = new User { Name = model.Name, Surname = model.Surname, UserName = model.UserName, Email = model.Email, Weight = model.Weight, Age = model.Age, HoursSleep = model.HoursSleep };
+                    switch (model.Exercise)
+                    {
+                        case "Molt": adminUser.Exercise = ExerciciEnum.Molt; break;
+                        case "Mig": adminUser.Exercise = ExerciciEnum.Mig; break;
+                        case "Poc": adminUser.Exercise = ExerciciEnum.Poc; break;
+                        default: adminUser.Exercise = ExerciciEnum.Res; break;
+                    }
                     var createResult = await userManager.CreateAsync(adminUser, "Itb2025@");
 
                     if (!createResult.Succeeded)
@@ -205,18 +213,25 @@
                 {
                     Console.WriteLine("Creant usuari...");
 
-                    var user = new User
+                    var model = new RegisterDTO
                     {
                         UserName = "User",
                         Email = "user@gmail.com",
                         Name = "User",
                         Surname = "User",
                         Weight = 50,
-                        Exercise = ExerciciEnum.Poc,
+                        Exercise = "Poc",
                         HoursSleep = 8,
                         Age = 19
                     };
-
+                    var user = new User { Name = model.Name, Surname = model.Surname, UserName = model.UserName, Email = model.Email, Weight = model.Weight, Age = model.Age, HoursSleep = model.HoursSleep };
+                    switch (model.Exercise)
+                    {
+                        case "Molt": user.Exercise = ExerciciEnum.Molt; break;
+                        case "Mig": user.Exercise = ExerciciEnum.Mig; break;
+                        case "Poc": user.Exercise = ExerciciEnum.Poc; break;
+                        default: user.Exercise = ExerciciEnum.Res; break;
+                    }
                     var createResult = await userManager.CreateAsync(user, "Itb2025@");
 
                     if (!createResult.Succeeded)
@@ -245,18 +260,25 @@
                 {
                     Console.WriteLine("Creant usuari doctor...");
 
-                    var docUser = new User
+                    var model = new RegisterDTO
                     {
                         UserName = "Doctor",
                         Email = "doctor@gmail.com",
                         Name = "Doctor",
                         Surname = "doctor",
                         Weight = 90,
-                        Exercise = ExerciciEnum.Poc,
+                        Exercise = "Poc",
                         HoursSleep = 9,
                         Age = 42
                     };
-
+                    var docUser = new User { Name = model.Name, Surname = model.Surname, UserName = model.UserName, Email = model.Email, Weight = model.Weight, Age = model.Age, HoursSleep = model.HoursSleep };
+                    switch (model.Exercise)
+                    {
+                        case "Molt": docUser.Exercise = ExerciciEnum.Molt; break;
+                        case "Mig": docUser.Exercise = ExerciciEnum.Mig; break;
+                        case "Poc": docUser.Exercise = ExerciciEnum.Poc; break;
+                        default: docUser.Exercise = ExerciciEnum.Res; break;
+                    }
                     var createResult = await userManager.CreateAsync(docUser, "Itb2025@");
 
                     if (!createResult.Succeeded)

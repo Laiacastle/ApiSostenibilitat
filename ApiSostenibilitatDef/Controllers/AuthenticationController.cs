@@ -87,6 +87,13 @@ namespace ApiSostenibilitat.Controllers
         public async Task<IActionResult> AdminRegister([FromBody] RegisterDTO model)
         {
             var user = new User { Name = model.Name, Surname = model.Surname, UserName = model.UserName, Email = model.Email, Weight = model.Weight, Age = model.Age, HoursSleep = model.HoursSleep };
+            switch (model.Exercise)
+            {
+                case "Molt": user.Exercise = ExerciciEnum.Molt; break;
+                case "Mig": user.Exercise = ExerciciEnum.Mig; break;
+                case "Poc": user.Exercise = ExerciciEnum.Poc; break;
+                default: user.Exercise = ExerciciEnum.Res; break;
+            }
             var result = await _userManager.CreateAsync(user, model.Password);
             var resultRol = new IdentityResult();
             if (result.Succeeded)
@@ -100,6 +107,32 @@ namespace ApiSostenibilitat.Controllers
             }
             return BadRequest(result.Errors);
         }
+
+        [HttpPost("doctor/registre")]
+        public async Task<IActionResult> DoctorRegister([FromBody] RegisterDTO model)
+        {
+            var user = new User { Name = model.Name, Surname = model.Surname, UserName = model.UserName, Email = model.Email, Weight = model.Weight, Age = model.Age, HoursSleep = model.HoursSleep };
+            switch (model.Exercise)
+            {
+                case "Molt": user.Exercise = ExerciciEnum.Molt; break;
+                case "Mig": user.Exercise = ExerciciEnum.Mig; break;
+                case "Poc": user.Exercise = ExerciciEnum.Poc; break;
+                default: user.Exercise = ExerciciEnum.Res; break;
+            }
+            var result = await _userManager.CreateAsync(user, model.Password);
+            var resultRol = new IdentityResult();
+            if (result.Succeeded)
+            {
+                resultRol = await _userManager.AddToRoleAsync(user, "Doctor");
+                _logger.LogInformation($"Rols assignats a {user.UserName}: {string.Join(", ", resultRol)}");
+            }
+            if (result.Succeeded && resultRol.Succeeded)
+            {
+                return Ok("Doctor registrat");
+            }
+            return BadRequest(result.Errors);
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
