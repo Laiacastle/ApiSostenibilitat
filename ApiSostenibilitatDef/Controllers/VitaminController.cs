@@ -4,6 +4,7 @@ using ApiSostenibilitat.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiSostenibilitatDef.Controllers
 {
@@ -36,7 +37,7 @@ namespace ApiSostenibilitatDef.Controllers
             
             return Ok(vitamin);
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPost]
         public async Task<ActionResult<Vitamin>> Add(Vitamin vitamin)
         {
@@ -52,7 +53,7 @@ namespace ApiSostenibilitatDef.Controllers
                 return BadRequest("Dades erroneas");
             }
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Vitamin>> Delete(int id)
         {
@@ -68,7 +69,7 @@ namespace ApiSostenibilitatDef.Controllers
                 return BadRequest("No s'ha pogut esborrar la vitamina");
             }
         }
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPut("{id}")]
         public async Task<ActionResult<Vitamin>> Update(Vitamin vitamin, int id)
         {
