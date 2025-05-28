@@ -76,6 +76,10 @@ namespace ApiSostenibilitat.Controllers
                 case "Poc": newUser.Exercise = ExerciciEnum.Poc; break;
                 default: newUser.Exercise = ExerciciEnum.Res; break;
             }
+            if(_userManager.Users.FirstOrDefault(u=>u.Email==newUser.Email) == null)
+            {
+                return BadRequest("Email already taken.");
+            }
             var result = await _userManager.CreateAsync(newUser, model.Password);
             if (result.Succeeded)
             {

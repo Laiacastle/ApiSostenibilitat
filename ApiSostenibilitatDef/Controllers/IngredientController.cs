@@ -106,7 +106,7 @@ namespace ApiSostenibilitatDef.Controllers
             {
                 _context.Ingredients.Add(ingredient);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetAll), ingredient);
+                return Ok(ingredient);
             }
             catch (DbUpdateException)
             {

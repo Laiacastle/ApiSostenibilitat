@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiSostenibilitatDef", "ApiSostenibilitatDef\ApiSostenibilitatDef.csproj", "{883B4CC2-49A2-4808-B47E-1BB0ECADA1BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiTestss", "ApiTestss\ApiTestss.csproj", "{095E2D52-26B8-4770-B0D2-384C4B530823}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{883B4CC2-49A2-4808-B47E-1BB0ECADA1BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{883B4CC2-49A2-4808-B47E-1BB0ECADA1BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{883B4CC2-49A2-4808-B47E-1BB0ECADA1BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{095E2D52-26B8-4770-B0D2-384C4B530823}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{095E2D52-26B8-4770-B0D2-384C4B530823}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{095E2D52-26B8-4770-B0D2-384C4B530823}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{095E2D52-26B8-4770-B0D2-384C4B530823}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
