@@ -3,16 +3,10 @@ using ApiSostenibilitat.Models.DTOs;
 using ApiSostenibilitat.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiSostenibilitat.Controllers
@@ -34,15 +28,19 @@ namespace ApiSostenibilitat.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Retrieves all the users registered in the system. It returns a list of users with summarized information in DTO format.
+        /// </summary>
+        /// <returns>Returns a list of UserDTO objects if users are found in the database. If no users are found, returns a 404 error.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAll()
         {
             var users = await _context.Users.OfType<User>().Include(n => n.Results).ToListAsync();
             if (users.Count == 0)
             {
-                return NotFound("Encara no hi han usuaris a la base de dades!");
+                return NotFound("There are no users in the database yet!");
             }
-            //mapeamos para q no haya el error de infinidad
+
             var userDTO = users.Select(n => new UserDTO
             {
                 Id = n.Id,
@@ -50,37 +48,47 @@ namespace ApiSostenibilitat.Controllers
                 Surname = n.Surname,
                 Email = n.Email != null ? n.Email : "Error",
                 Password = n.PasswordHash != null ? n.PasswordHash : "Error",
-                UserName = n.UserName != null  ? n.UserName: n.Name,
+                UserName = n.UserName != null ? n.UserName : n.Name,
                 Weight = n.Weight,
                 Exercise = n.Exercise.ToString(),
                 HoursSleep = n.HoursSleep,
                 Age = n.Age,
                 Results = n.Results.Select(r => r.FiResult).ToList(),
-                Diet = n.Diet != null ? n.Diet.Id.ToString() : "Sense dieta"
+                Diet = n.Diet != null ? n.Diet.Id.ToString() : "No diet"
             }).ToList();
 
             return Ok(userDTO);
         }
+
+        /// <summary>
+        /// Registers a new user in the system. It assigns the data received in the RegisterDTO model to the new user.
+        /// </summary>
+        /// <param name="model">The RegisterDTO object that contains the new user's data.</param>
+        /// <returns>Returns a success message if the registration is successful, or a 400 error with details if there are issues during registration.</returns>
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register([FromBody] RegisterDTO model)
         {
-            var newUser = new User { Name = model.Name, Surname=model.Surname, UserName = model.UserName, Email = model.Email, Weight = model.Weight, Age = model.Age, HoursSleep = model.HoursSleep };
+            var newUser = new User { Name = model.Name, Surname = model.Surname, UserName = model.UserName, Email = model.Email, Weight = model.Weight, Age = model.Age, HoursSleep = model.HoursSleep };
             switch (model.Exercise)
             {
                 case "Molt": newUser.Exercise = ExerciciEnum.Molt; break;
                 case "Mig": newUser.Exercise = ExerciciEnum.Mig; break;
                 case "Poc": newUser.Exercise = ExerciciEnum.Poc; break;
-                default: newUser.Exercise = ExerciciEnum.Res;break;
+                default: newUser.Exercise = ExerciciEnum.Res; break;
             }
-            var resultat = await _userManager.CreateAsync(newUser, model.Password);
-            if (resultat.Succeeded)
+            var result = await _userManager.CreateAsync(newUser, model.Password);
+            if (result.Succeeded)
             {
-                return Ok("Usuari registrat");
+                return Ok("User registered successfully.");
             }
-            return BadRequest(resultat.Errors);
-
+            return BadRequest(result.Errors);
         }
 
+        /// <summary>
+        /// Registers a new user and assigns the role of "Admin" to the user.
+        /// </summary>
+        /// <param name="model">The RegisterDTO object that contains the new user's data.</param>
+        /// <returns>Returns a success message if the registration is successful and the "Admin" role is assigned, or a 400 error with details if there are issues.</returns>
         [HttpPost("admin/registre")]
         public async Task<IActionResult> AdminRegister([FromBody] RegisterDTO model)
         {
@@ -97,15 +105,20 @@ namespace ApiSostenibilitat.Controllers
             if (result.Succeeded)
             {
                 resultRol = await _userManager.AddToRoleAsync(user, "Admin");
-                _logger.LogInformation($"Rols assignats a {user.UserName}: {string.Join(", ", resultRol)}");
+                _logger.LogInformation($"Roles assigned to {user.UserName}: {string.Join(", ", resultRol)}");
             }
             if (result.Succeeded && resultRol.Succeeded)
             {
-                return Ok("Administrador registrat");
+                return Ok("Admin registered successfully.");
             }
             return BadRequest(result.Errors);
         }
 
+        /// <summary>
+        /// Registers a new user and assigns the role of "Doctor" to the user.
+        /// </summary>
+        /// <param name="model">The RegisterDTO object that contains the new user's data.</param>
+        /// <returns>Returns a success message if the registration is successful and the "Doctor" role is assigned, or a 400 error with details if there are issues.</returns>
         [HttpPost("doctor/registre")]
         public async Task<IActionResult> DoctorRegister([FromBody] RegisterDTO model)
         {
@@ -123,39 +136,51 @@ namespace ApiSostenibilitat.Controllers
             if (result.Succeeded)
             {
                 resultRol = await _userManager.AddToRoleAsync(user, "Doctor");
-                _logger.LogInformation($"Rols assignats a {user.UserName}: {string.Join(", ", resultRol)}");
+                _logger.LogInformation($"Roles assigned to {user.UserName}: {string.Join(", ", resultRol)}");
             }
             if (result.Succeeded && resultRol.Succeeded)
             {
-                return Ok("Doctor registrat");
+                return Ok("Doctor registered successfully.");
             }
             return BadRequest(result.Errors);
         }
 
+        /// <summary>
+        /// Allows a user to authenticate using their email and password, and returns a JWT if authentication is successful.
+        /// </summary>
+        /// <param name="model">The LoginDTO object that contains the user's email and password.</param>
+        /// <returns>Returns a JWT token if the login is successful, or a 401 error if the email or password is incorrect.</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                return Unauthorized("Mail o contrasenya erronis");
+                return Unauthorized("Incorrect email or password.");
             }
+
             var claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, user.UserName != null ? user.UserName : user.Name),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            };
+    {
+        new Claim(ClaimTypes.Name, user.UserName != null ? user.UserName : user.Name),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+    };
             var roles = await _userManager.GetRolesAsync(user);
             if (roles != null && roles.Count > 0)
             {
-                foreach (var rol in roles)
+                foreach (var role in roles)
                 {
-                    claims.Add(new Claim("role", rol));
+                    claims.Add(new Claim("role", role));
                 }
             }
+
             return Ok(CreateToken(claims.ToArray()));
         }
 
+        /// <summary>
+        /// Creates a JWT token for the authenticated user based on the provided claims.
+        /// </summary>
+        /// <param name="claims">An array of claims that contain user-related information such as username and roles.</param>
+        /// <returns>Returns a JWT token as a string.</returns>
         private string CreateToken(Claim[] claims)
         {
             var jwtConfig = _configuration.GetSection("jwtSettings");
@@ -177,7 +202,10 @@ namespace ApiSostenibilitat.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-
+        /// <summary>
+        /// Retrieves the claims associated with the authenticated user.
+        /// </summary>
+        /// <returns>Returns a list of the user's claims, including their name, identifier, and roles.</returns>
         [HttpGet("claims")]
         public IActionResult GetClaims()
         {
@@ -186,3 +214,4 @@ namespace ApiSostenibilitat.Controllers
         }
     }
 }
+

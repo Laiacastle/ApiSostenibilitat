@@ -14,16 +14,21 @@ namespace ApiSostenibilitatDef.Controllers
     {
         private readonly ApplicationDbContext _context;
         public RecipeController(ApplicationDbContext context) { _context = context; }
+        /// <summary>
+        /// Retrieves all the recipes from the database, including their associated ingredients and diets.
+        /// It returns a list of RecipeDTO objects with recipe details, including ingredient names and diet IDs.
+        /// </summary>
+        /// <returns>Returns a list of RecipeDTO objects if recipes are found. If no recipes are found, returns a 404 error.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Recipe>>> GetAll()
         {
             var recipes = await _context.Recipes.Include(n => n.Ingredients).Include(n => n.Diets).ToListAsync();
             if (recipes.Count == 0)
             {
-                return NotFound("Encara no hi han receptes a la base de dades!");
+                return NotFound("There are no recipes in the database yet!");
             }
 
-            // M apeamos para pasarlo al dto para evitar el error de infinidad
+            // Map recipes to RecipeDTO to avoid circular reference errors
             var recipeDTO = recipes.Select(n => new RecipeDTO
             {
                 Id = n.Id,
@@ -36,14 +41,21 @@ namespace ApiSostenibilitatDef.Controllers
             return Ok(recipeDTO);
         }
 
+        /// <summary>
+        /// Retrieves a specific recipe by its ID, including the associated ingredients and diets.
+        /// It returns the recipe as a RecipeDTO object if found.
+        /// </summary>
+        /// <param name="id">The ID of the recipe to retrieve.</param>
+        /// <returns>Returns a RecipeDTO object if the recipe is found, or a 404 error if the recipe is not found.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Recipe>> GetById(int id)
         {
             var recipe = await _context.Recipes.Include(n => n.Diets).Include(n => n.Ingredients).FirstOrDefaultAsync(n => n.Id == id);
             if (recipe == null)
             {
-                return NotFound("No s'ha trobat la recepta");
+                return NotFound("Recipe not found.");
             }
+
             var recipeDTO = new RecipeDTO
             {
                 Id = recipe.Id,
@@ -52,25 +64,36 @@ namespace ApiSostenibilitatDef.Controllers
                 Ingredients = recipe.Ingredients.Select(v => v.Name).ToList(),
                 Diets = recipe.Diets.Select(r => r.Id).ToList()
             };
+
             return Ok(recipeDTO);
         }
+
+
+        /// <summary>
+        /// Adds a new recipe to the database based on the provided RecipeDTO object.
+        /// The recipe includes associated ingredients and diets mapped from the DTO.
+        /// </summary>
+        /// <param name="recipeDTO">The RecipeDTO object containing the new recipe's data.</param>
+        /// <returns>Returns a 201 status with the created recipe if successful, or a 400 error if the provided data is invalid.</returns>
+
         [Authorize(Roles = "Admin,Doctor")]
+
         [HttpPost]
         public async Task<ActionResult<Recipe>> Add(RecipeDTO recipeDTO)
         {
-            var recipe = new Recipe { Name = recipeDTO.Name, Description = recipeDTO.Description};
+            var recipe = new Recipe { Name = recipeDTO.Name, Description = recipeDTO.Description };
 
-            //Afegim els results 
-
+            // Add ingredients to the recipe
             foreach (var i in recipeDTO.Ingredients)
             {
-               
-                var result = await _context.Ingredients.FirstOrDefaultAsync(n=>n.Name == i);
+                var result = await _context.Ingredients.FirstOrDefaultAsync(n => n.Name == i);
                 if (result != null)
                 {
                     recipe.Ingredients.Add(result);
                 }
             }
+
+            // Add diets to the recipe
             foreach (var i in recipeDTO.Diets)
             {
                 var result = await _context.Diets.FindAsync(i);
@@ -88,10 +111,20 @@ namespace ApiSostenibilitatDef.Controllers
             }
             catch (DbUpdateException)
             {
-                return BadRequest("Dades erroneas");
+                return BadRequest("Invalid data.");
             }
         }
+
+
+        /// <summary>
+        /// Deletes a specific recipe from the database by its ID.
+        /// It returns the deleted recipe if successful, or a 400 error if the deletion fails.
+        /// </summary>
+        /// <param name="id">The ID of the recipe to delete.</param>
+        /// <returns>Returns the deleted recipe if successful, or a 400 error if the recipe cannot be deleted.</returns>
+
         [Authorize(Roles = "Admin")]
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Recipe>> Delete(int id)
         {
@@ -104,10 +137,21 @@ namespace ApiSostenibilitatDef.Controllers
             }
             catch (DbUpdateException)
             {
-                return BadRequest("No s'ha pogut esborrar la recepta");
+                return BadRequest("Could not delete the recipe.");
             }
         }
+
+
+        /// <summary>
+        /// Updates an existing recipe by its ID with the data from the provided RecipeDTO object.
+        /// It also updates the associated ingredients and diets of the recipe.
+        /// </summary>
+        /// <param name="recipeDTO">The RecipeDTO object containing the updated recipe's data.</param>
+        /// <param name="id">The ID of the recipe to update.</param>
+        /// <returns>Returns the updated recipe if successful, or a 400 error if the update fails.</returns>
+
         [Authorize(Roles = "Admin,Doctor")]
+
         [HttpPut("{id}")]
         public async Task<ActionResult<Recipe>> Update(RecipeDTO recipeDTO, int id)
         {
@@ -115,24 +159,24 @@ namespace ApiSostenibilitatDef.Controllers
 
             if (recipe == null)
             {
-                return NotFound("La recepta no existeix!");
+                return NotFound("The recipe does not exist.");
             }
-
 
             recipe.Name = recipeDTO.Name;
             recipe.Description = recipeDTO.Description;
 
-
+            // Update ingredients
             recipe.Ingredients.Clear();
             foreach (var ingName in recipeDTO.Ingredients)
             {
-                var result = await _context.Ingredients.FirstOrDefaultAsync(n=>n.Name == ingName);
+                var result = await _context.Ingredients.FirstOrDefaultAsync(n => n.Name == ingName);
                 if (result != null)
                 {
                     recipe.Ingredients.Add(result);
                 }
             }
 
+            // Update diets
             recipe.Diets.Clear();
             foreach (var dietId in recipeDTO.Diets)
             {
@@ -150,8 +194,10 @@ namespace ApiSostenibilitatDef.Controllers
             }
             catch (DbUpdateException)
             {
-                return BadRequest("No s'ha pogut fer l'update");
+                return BadRequest("Update failed.");
             }
         }
     }
+
 }
+

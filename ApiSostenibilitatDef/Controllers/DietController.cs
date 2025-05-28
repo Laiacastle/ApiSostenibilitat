@@ -14,21 +14,27 @@ namespace ApiSostenibilitatDef.Controllers
     {
         private readonly ApplicationDbContext _context;
         public DietController(ApplicationDbContext context) { _context = context; }
+        
+        /// <summary>
+        /// Retrieves all the diets from the database along with their associated results and recipes.
+        /// It returns a list of DietDTO objects containing relevant diet details.
+        /// </summary>
+        /// <returns>Returns a list of DietDTO objects if diets are found in the database. If no diets are found, returns a 404 error.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Diet>>> GetAll()
         {
             var diets = await _context.Diets.Include(n => n.Results).Include(d => d.Recipes).ToListAsync();
             if (diets.Count == 0)
             {
-                return NotFound("Encara no hi han dietes a la base de dades!");
+                return NotFound("There are no diets in the database yet!");
             }
 
-            // Mapeamos para pasarlo al dto para evitar el error de infinidad
+            // Map diets to DietDTO to avoid circular reference errors
             var dietDTO = diets.Select(n => new DietDTO
             {
                 Id = n.Id,
                 Name = n.Name,
-                Characteristics = n.Characteristics != null ? n.Characteristics : "no info",
+                Characteristics = n.Characteristics != null ? n.Characteristics : "No info",
                 UserId = n.UserId,
                 Recipes = n.Recipes.Select(u => u.Id).ToList(),
                 Results = n.Results.Select(r => r.Date).ToList()
@@ -37,32 +43,50 @@ namespace ApiSostenibilitatDef.Controllers
             return Ok(dietDTO);
         }
 
+        /// <summary>
+        /// Retrieves a specific diet by its ID, including its associated results and recipes.
+        /// It returns the diet as a DietDTO object if found.
+        /// </summary>
+        /// <param name="id">The ID of the diet to retrieve.</param>
+        /// <returns>Returns a DietDTO object if the diet is found, or a 404 error if the diet is not found.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Diet>> GetById(int id)
         {
             var diet = await _context.Diets.Include(n => n.Results).Include(r => r.Recipes).FirstOrDefaultAsync(n => n.Id == id);
             if (diet == null)
             {
-                return NotFound("No s'ha trobat la dieta");
+                return NotFound("Diet not found.");
             }
+
             var dietDTO = new DietDTO
             {
                 Id = diet.Id,
                 Name = diet.Name,
-                Characteristics = diet.Characteristics != null ? diet.Characteristics : "no info",
+                Characteristics = diet.Characteristics != null ? diet.Characteristics : "No info",
                 UserId = diet.UserId,
                 Recipes = diet.Recipes.Select(u => u.Id).ToList(),
                 Results = diet.Results.Select(r => r.Date).ToList()
             };
+
             return Ok(dietDTO);
         }
+
+
+        /// <summary>
+        /// Adds a new diet to the database based on the provided DietDTO object.
+        /// The diet includes associated recipes and results that are mapped from the DTO.
+        /// </summary>
+        /// <param name="dietDTO">The DietDTO object containing the new diet's data.</param>
+        /// <returns>Returns a 201 status with the created diet if successful, or a 400 error if there are issues with the provided data.</returns>
+
         [Authorize(Roles = "Admin,Doctor")]
+
         [HttpPost]
         public async Task<ActionResult<Diet>> Add(DietDTO dietDTO)
         {
-            var diet = new Diet { Name = dietDTO.Name, Characteristics = dietDTO.Characteristics !=null ? dietDTO.Characteristics: "no info", UserId = dietDTO.UserId};
+            var diet = new Diet { Name = dietDTO.Name, Characteristics = dietDTO.Characteristics ?? "No info", UserId = dietDTO.UserId };
 
-            //Afegim els results i recipes
+            // Add recipes and results
             foreach (var i in dietDTO.Recipes)
             {
                 var recipe = await _context.Recipes.FindAsync(i);
@@ -71,6 +95,7 @@ namespace ApiSostenibilitatDef.Controllers
                     diet.Recipes.Add(await _context.Recipes.FindAsync(recipe));
                 }
             }
+
             foreach (var i in dietDTO.Results)
             {
                 var result = await _context.Results.FindAsync(i);
@@ -88,10 +113,20 @@ namespace ApiSostenibilitatDef.Controllers
             }
             catch (DbUpdateException)
             {
-                return BadRequest("Dades erroneas");
+                return BadRequest("Invalid data.");
             }
         }
+
+
+        /// <summary>
+        /// Deletes a specific diet from the database by its ID.
+        /// It returns the deleted diet if successful, or a 400 error if the deletion fails.
+        /// </summary>
+        /// <param name="id">The ID of the diet to delete.</param>
+        /// <returns>Returns the deleted diet if successful, or a 400 error if the diet cannot be deleted.</returns>
+
         [Authorize(Roles = "Admin,Doctor")]
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Diet>> Delete(int id)
         {
@@ -104,10 +139,21 @@ namespace ApiSostenibilitatDef.Controllers
             }
             catch (DbUpdateException)
             {
-                return BadRequest("No s'ha pogut esborrar la dieta");
+                return BadRequest("Could not delete the diet.");
             }
         }
+
+
+        /// <summary>
+        /// Updates an existing diet by its ID with the data from the provided DietDTO object.
+        /// It also updates the associated recipes and results of the diet.
+        /// </summary>
+        /// <param name="dietDTO">The DietDTO object containing the updated diet data.</param>
+        /// <param name="id">The ID of the diet to update.</param>
+        /// <returns>Returns the updated diet if successful, or a 400 error if the update fails.</returns>
+    
         [Authorize(Roles = "Admin,Doctor")]
+
         [HttpPut("{id}")]
         public async Task<ActionResult<Diet>> Update(DietDTO dietDTO, int id)
         {
@@ -115,15 +161,14 @@ namespace ApiSostenibilitatDef.Controllers
 
             if (diet == null)
             {
-                return NotFound("L'ingredient no existeix!");
+                return NotFound("Diet does not exist.");
             }
-
 
             diet.Name = dietDTO.Name;
             diet.Characteristics = dietDTO.Characteristics;
             diet.UserId = dietDTO.UserId;
 
-
+            // Update recipes and results
             diet.Recipes.Clear();
             foreach (var rId in dietDTO.Recipes)
             {
@@ -151,28 +196,39 @@ namespace ApiSostenibilitatDef.Controllers
             }
             catch (DbUpdateException)
             {
-                return BadRequest("No s'ha pogut fer l'update");
+                return BadRequest("Update failed.");
             }
         }
+
+
+        /// <summary>
+        /// Assigns or removes a diet for a specific user. If the diet is already assigned, it will be removed; otherwise, it will be assigned.
+        /// </summary>
+        /// <param name="id">The ID of the diet to assign or remove.</param>
+        /// <param name="idUser">The ID of the user to whom the diet will be assigned or removed.</param>
+        /// <returns>Returns a success message indicating whether the diet was assigned or removed, or a 400 error if the operation fails.</returns>
+
         [Authorize]
+
         [HttpPut("/Asign/{id}/{idUser}")]
         public async Task<ActionResult> AsignDiet(int id, string idUser)
         {
             var diet = await _context.Diets.FirstOrDefaultAsync(n => n.Id == id);
             var user = await _context.Users.OfType<User>().FirstOrDefaultAsync(n => n.Id == idUser);
+
             try
             {
-                var Asigned = diet.UserId == idUser;
+                var isAssigned = diet.UserId == idUser;
 
-                if (Asigned)
+                if (isAssigned)
                 {
                     user.Diet = null;
                     diet.UserId = null;
                     diet.User = null;
                     _context.Update(user);
-                    _context.Update(user);
+                    _context.Update(diet);
                     await _context.SaveChangesAsync();
-                    return Ok($"Dieta {diet.Name} per {user.Name} eliminada");
+                    return Ok($"Diet {diet.Name} for {user.Name} removed.");
                 }
                 else
                 {
@@ -180,14 +236,15 @@ namespace ApiSostenibilitatDef.Controllers
                     diet.User = user;
                     diet.UserId = user.Id;
                     _context.Update(user);
-                    _context.Update(user);
+                    _context.Update(diet);
                     await _context.SaveChangesAsync();
-                    return Ok($"Dieta {diet.Name} per {user.Name} afegida");
+                    return Ok($"Diet {diet.Name} for {user.Name} added.");
                 }
             }
             catch (DbUpdateException)
             {
-                return BadRequest("No s'ha pogut asignar la dieta");
+
+                return BadRequest("Could not assign or remove the diet.");
             }
         }
     }
