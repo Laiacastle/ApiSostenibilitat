@@ -109,7 +109,7 @@ namespace ApiSostenibilitatDef.Controllers
             {
                 _context.Diets.Add(diet);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetAll), diet);
+                return Ok(diet);
             }
             catch (DbUpdateException)
             {

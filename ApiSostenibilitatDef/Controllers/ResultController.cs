@@ -100,7 +100,7 @@ namespace ApiSostenibilitatDef.Controllers
 
                 _context.Results.Add(result);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetAll), result);
+                return Ok(result);
             }
             catch (DbUpdateException)
             {
