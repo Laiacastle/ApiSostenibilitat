@@ -61,6 +61,40 @@ namespace ApiSostenibilitat.Controllers
         }
 
         /// <summary>
+        /// Retrieves a specific user by its ID, including its associated results.
+        /// It returns the user as a UserDTO object if found.
+        /// </summary>
+        /// <param name="id">The ID of the user to retrieve.</param>
+        /// <returns>Returns a UserDTO object if the user is found, or a 404 error if the user is not found.</returns>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UserDTO>> GetById(string id)
+        {
+            var user = await _context.Users.OfType<User>().Include(n => n.Results).FirstOrDefaultAsync(u=>u.Id == id);
+            if (user == null)
+            {
+                return NotFound("The user does not exist.");
+            }
+
+            var userDTO = new UserDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Surname = user.Surname,
+                Email = user.Email != null ? user.Email : "Error",
+                Password = user.PasswordHash != null ? user.PasswordHash : "Error",
+                UserName = user.UserName != null ? user.UserName : user.Name,
+                Weight = user.Weight,
+                Exercise = user.Exercise.ToString(),
+                HoursSleep = user.HoursSleep,
+                Age = user.Age,
+                Results = user.Results.Select(r => r.FiResult).ToList(),
+                Diet = user.Diet != null ? user.Diet.Id.ToString() : "No diet"
+            };
+
+            return Ok(userDTO);
+        }
+
+        /// <summary>
         /// Registers a new user in the system. It assigns the data received in the RegisterDTO model to the new user.
         /// </summary>
         /// <param name="model">The RegisterDTO object that contains the new user's data.</param>
