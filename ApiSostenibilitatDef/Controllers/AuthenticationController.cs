@@ -149,6 +149,9 @@ namespace ApiSostenibilitat.Controllers
             return BadRequest(result.Errors);
         }
 
+
+
+
         /// <summary>
         /// Allows a user to authenticate using their email and password, and returns a JWT if authentication is successful.
         /// </summary>
