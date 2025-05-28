@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ApiSostenibilitat.Migrations
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
+namespace ApiSostenibilitatDef.Migrations
 {
     /// <inheritdoc />
     public partial class FirstMigration : Migration
@@ -32,13 +34,13 @@ namespace ApiSostenibilitat.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Weight = table.Column<double>(type: "float", nullable: false),
                     Exercise = table.Column<int>(type: "int", nullable: false),
                     HoursSleep = table.Column<double>(type: "float", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -62,9 +64,9 @@ namespace ApiSostenibilitat.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MinRes = table.Column<double>(type: "float", nullable: false),
-                    MaxRes = table.Column<double>(type: "float", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    MinRes = table.Column<int>(type: "int", nullable: false),
+                    MaxRes = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -99,6 +101,19 @@ namespace ApiSostenibilitat.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Recipe", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Vitamins",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vitamins", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -213,8 +228,9 @@ namespace ApiSostenibilitat.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Characteristics = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -223,26 +239,6 @@ namespace ApiSostenibilitat.Migrations
                         name: "FK_Diet_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Vitamin",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IngredientId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Vitamin", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Vitamin_Ingredient_IngredientId",
-                        column: x => x.IngredientId,
-                        principalTable: "Ingredient",
                         principalColumn: "Id");
                 });
 
@@ -266,6 +262,30 @@ namespace ApiSostenibilitat.Migrations
                         name: "FK_IngredientRecipe_Recipe_RecipesId",
                         column: x => x.RecipesId,
                         principalTable: "Recipe",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IngredientVitamin",
+                columns: table => new
+                {
+                    IngredientsId = table.Column<int>(type: "int", nullable: false),
+                    VitaminsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IngredientVitamin", x => new { x.IngredientsId, x.VitaminsId });
+                    table.ForeignKey(
+                        name: "FK_IngredientVitamin_Ingredient_IngredientsId",
+                        column: x => x.IngredientsId,
+                        principalTable: "Ingredient",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_IngredientVitamin_Vitamins_VitaminsId",
+                        column: x => x.VitaminsId,
+                        principalTable: "Vitamins",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -298,14 +318,17 @@ namespace ApiSostenibilitat.Migrations
                 name: "Result",
                 columns: table => new
                 {
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     GameId = table.Column<int>(type: "int", nullable: false),
-                    DietId = table.Column<int>(type: "int", nullable: false)
+                    DietId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FiResult = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Result", x => x.Date);
+                    table.PrimaryKey("PK_Result", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Result_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -324,6 +347,62 @@ namespace ApiSostenibilitat.Migrations
                         principalTable: "Game",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Game",
+                columns: new[] { "Id", "MaxRes", "MinRes", "Type" },
+                values: new object[,]
+                {
+                    { 1, 275, 375, "Reflexes" },
+                    { 2, 20000, 20, "Oida" },
+                    { 3, 100000000, 50000000, "Vista" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Ingredient",
+                columns: new[] { "Id", "Calories", "EatForms", "Fiber", "Name" },
+                values: new object[,]
+                {
+                    { 1, 41.0, "[\"Crua\",\"Cuita\",\"Ratllada\",\"Batuda\"]", 2.7999999999999998, "Pastanaga" },
+                    { 2, 23.0, "[\"Cuita\"]", 2.2000000000000002, "Espinaca" },
+                    { 3, 89.0, "[\"Cru\",\"Fregit\",\"Batut\"]", 2.6000000000000001, "Plátan" },
+                    { 4, 160.0, "[\"Cru\",\"Batut\"]", 6.7000000000000002, "Aguacate" },
+                    { 5, 34.0, "[\"Cuita\",\"Batut\"]", 2.6000000000000001, "Brócoli" },
+                    { 6, 18.0, "[\"Cru\",\"Cuinat\",\"Batut\"]", 1.2, "Tomaquet" },
+                    { 7, 579.0, "[\"Crua\",\"Ratllada\"]", 12.5, "Almendra" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Vitamins",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "A" },
+                    { 2, "C" },
+                    { 3, "K" },
+                    { 4, "B6" },
+                    { 5, "E" },
+                    { 6, "D" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "IngredientVitamin",
+                columns: new[] { "IngredientsId", "VitaminsId" },
+                values: new object[,]
+                {
+                    { 1, 1 },
+                    { 1, 2 },
+                    { 2, 2 },
+                    { 2, 3 },
+                    { 3, 4 },
+                    { 4, 5 },
+                    { 5, 2 },
+                    { 5, 3 },
+                    { 6, 1 },
+                    { 6, 2 },
+                    { 7, 5 },
+                    { 7, 6 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -369,7 +448,8 @@ namespace ApiSostenibilitat.Migrations
                 name: "IX_Diet_UserId",
                 table: "Diet",
                 column: "UserId",
-                unique: true);
+                unique: true,
+                filter: "[UserId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DietRecipe_RecipesId",
@@ -380,6 +460,11 @@ namespace ApiSostenibilitat.Migrations
                 name: "IX_IngredientRecipe_RecipesId",
                 table: "IngredientRecipe",
                 column: "RecipesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IngredientVitamin_VitaminsId",
+                table: "IngredientVitamin",
+                column: "VitaminsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Result_DietId",
@@ -395,11 +480,6 @@ namespace ApiSostenibilitat.Migrations
                 name: "IX_Result_UserId",
                 table: "Result",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Vitamin_IngredientId",
-                table: "Vitamin",
-                column: "IngredientId");
         }
 
         /// <inheritdoc />
@@ -427,10 +507,10 @@ namespace ApiSostenibilitat.Migrations
                 name: "IngredientRecipe");
 
             migrationBuilder.DropTable(
-                name: "Result");
+                name: "IngredientVitamin");
 
             migrationBuilder.DropTable(
-                name: "Vitamin");
+                name: "Result");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -439,13 +519,16 @@ namespace ApiSostenibilitat.Migrations
                 name: "Recipe");
 
             migrationBuilder.DropTable(
+                name: "Ingredient");
+
+            migrationBuilder.DropTable(
+                name: "Vitamins");
+
+            migrationBuilder.DropTable(
                 name: "Diet");
 
             migrationBuilder.DropTable(
                 name: "Game");
-
-            migrationBuilder.DropTable(
-                name: "Ingredient");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

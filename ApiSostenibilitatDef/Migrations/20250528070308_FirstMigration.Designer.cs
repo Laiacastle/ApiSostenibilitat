@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ApiSostenibilitat.Migrations
+namespace ApiSostenibilitatDef.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250520081924_ChangeEmailUser")]
-    partial class ChangeEmailUser
+    [Migration("20250528070308_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,13 +42,13 @@ namespace ApiSostenibilitat.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("Diet");
                 });
@@ -61,19 +61,42 @@ namespace ApiSostenibilitat.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("MaxRes")
-                        .HasColumnType("float");
+                    b.Property<int>("MaxRes")
+                        .HasColumnType("int");
 
-                    b.Property<double>("MinRes")
-                        .HasColumnType("float");
+                    b.Property<int>("MinRes")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Game");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            MaxRes = 275,
+                            MinRes = 375,
+                            Type = "Reflexes"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            MaxRes = 20000,
+                            MinRes = 20,
+                            Type = "Oida"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            MaxRes = 100000000,
+                            MinRes = 50000000,
+                            Type = "Vista"
+                        });
                 });
 
             modelBuilder.Entity("ApiSostenibilitat.Models.Ingredient", b =>
@@ -101,6 +124,64 @@ namespace ApiSostenibilitat.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Ingredient");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Calories = 41.0,
+                            EatForms = "[\"Crua\",\"Cuita\",\"Ratllada\",\"Batuda\"]",
+                            Fiber = 2.7999999999999998,
+                            Name = "Pastanaga"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Calories = 23.0,
+                            EatForms = "[\"Cuita\"]",
+                            Fiber = 2.2000000000000002,
+                            Name = "Espinaca"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Calories = 89.0,
+                            EatForms = "[\"Cru\",\"Fregit\",\"Batut\"]",
+                            Fiber = 2.6000000000000001,
+                            Name = "Plátan"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Calories = 160.0,
+                            EatForms = "[\"Cru\",\"Batut\"]",
+                            Fiber = 6.7000000000000002,
+                            Name = "Aguacate"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Calories = 34.0,
+                            EatForms = "[\"Cuita\",\"Batut\"]",
+                            Fiber = 2.6000000000000001,
+                            Name = "Brócoli"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Calories = 18.0,
+                            EatForms = "[\"Cru\",\"Cuinat\",\"Batut\"]",
+                            Fiber = 1.2,
+                            Name = "Tomaquet"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Calories = 579.0,
+                            EatForms = "[\"Crua\",\"Ratllada\"]",
+                            Fiber = 12.5,
+                            Name = "Almendra"
+                        });
                 });
 
             modelBuilder.Entity("ApiSostenibilitat.Models.Recipe", b =>
@@ -126,14 +207,20 @@ namespace ApiSostenibilitat.Migrations
 
             modelBuilder.Entity("ApiSostenibilitat.Models.Result", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("DietId")
                         .HasColumnType("int");
 
-                    b.Property<double>("FiResult")
-                        .HasColumnType("float");
+                    b.Property<int>("FiResult")
+                        .HasColumnType("int");
 
                     b.Property<int>("GameId")
                         .HasColumnType("int");
@@ -142,7 +229,7 @@ namespace ApiSostenibilitat.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Date");
+                    b.HasKey("Id");
 
                     b.HasIndex("DietId");
 
@@ -169,7 +256,6 @@ namespace ApiSostenibilitat.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -247,18 +333,45 @@ namespace ApiSostenibilitat.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("IngredientId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IngredientId");
+                    b.ToTable("Vitamins");
 
-                    b.ToTable("Vitamin");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "A"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "C"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "K"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "B6"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "E"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "D"
+                        });
                 });
 
             modelBuilder.Entity("DietRecipe", b =>
@@ -289,6 +402,83 @@ namespace ApiSostenibilitat.Migrations
                     b.HasIndex("RecipesId");
 
                     b.ToTable("IngredientRecipe");
+                });
+
+            modelBuilder.Entity("IngredientVitamin", b =>
+                {
+                    b.Property<int>("IngredientsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VitaminsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IngredientsId", "VitaminsId");
+
+                    b.HasIndex("VitaminsId");
+
+                    b.ToTable("IngredientVitamin");
+
+                    b.HasData(
+                        new
+                        {
+                            IngredientsId = 1,
+                            VitaminsId = 1
+                        },
+                        new
+                        {
+                            IngredientsId = 1,
+                            VitaminsId = 2
+                        },
+                        new
+                        {
+                            IngredientsId = 2,
+                            VitaminsId = 2
+                        },
+                        new
+                        {
+                            IngredientsId = 2,
+                            VitaminsId = 3
+                        },
+                        new
+                        {
+                            IngredientsId = 3,
+                            VitaminsId = 4
+                        },
+                        new
+                        {
+                            IngredientsId = 4,
+                            VitaminsId = 5
+                        },
+                        new
+                        {
+                            IngredientsId = 5,
+                            VitaminsId = 2
+                        },
+                        new
+                        {
+                            IngredientsId = 5,
+                            VitaminsId = 3
+                        },
+                        new
+                        {
+                            IngredientsId = 6,
+                            VitaminsId = 1
+                        },
+                        new
+                        {
+                            IngredientsId = 6,
+                            VitaminsId = 2
+                        },
+                        new
+                        {
+                            IngredientsId = 7,
+                            VitaminsId = 5
+                        },
+                        new
+                        {
+                            IngredientsId = 7,
+                            VitaminsId = 6
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -428,9 +618,7 @@ namespace ApiSostenibilitat.Migrations
                 {
                     b.HasOne("ApiSostenibilitat.Models.User", "User")
                         .WithOne("Diet")
-                        .HasForeignKey("ApiSostenibilitat.Models.Diet", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ApiSostenibilitat.Models.Diet", "UserId");
 
                     b.Navigation("User");
                 });
@@ -462,13 +650,6 @@ namespace ApiSostenibilitat.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ApiSostenibilitat.Models.Vitamin", b =>
-                {
-                    b.HasOne("ApiSostenibilitat.Models.Ingredient", null)
-                        .WithMany("Vitamins")
-                        .HasForeignKey("IngredientId");
-                });
-
             modelBuilder.Entity("DietRecipe", b =>
                 {
                     b.HasOne("ApiSostenibilitat.Models.Diet", null)
@@ -495,6 +676,21 @@ namespace ApiSostenibilitat.Migrations
                     b.HasOne("ApiSostenibilitat.Models.Recipe", null)
                         .WithMany()
                         .HasForeignKey("RecipesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("IngredientVitamin", b =>
+                {
+                    b.HasOne("ApiSostenibilitat.Models.Ingredient", null)
+                        .WithMany()
+                        .HasForeignKey("IngredientsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ApiSostenibilitat.Models.Vitamin", null)
+                        .WithMany()
+                        .HasForeignKey("VitaminsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -558,11 +754,6 @@ namespace ApiSostenibilitat.Migrations
             modelBuilder.Entity("ApiSostenibilitat.Models.Game", b =>
                 {
                     b.Navigation("Results");
-                });
-
-            modelBuilder.Entity("ApiSostenibilitat.Models.Ingredient", b =>
-                {
-                    b.Navigation("Vitamins");
                 });
 
             modelBuilder.Entity("ApiSostenibilitat.Models.User", b =>
