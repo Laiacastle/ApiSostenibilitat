@@ -76,7 +76,7 @@ namespace ApiSostenibilitat.Controllers
                 case "Poc": newUser.Exercise = ExerciciEnum.Poc; break;
                 default: newUser.Exercise = ExerciciEnum.Res; break;
             }
-            if(_userManager.Users.FirstOrDefault(u=>u.Email==newUser.Email) == null)
+            if(_userManager.Users.FirstOrDefault(u=>u.Email==newUser.Email) != null)
             {
                 return BadRequest("Email already taken.");
             }
@@ -148,6 +148,9 @@ namespace ApiSostenibilitat.Controllers
             }
             return BadRequest(result.Errors);
         }
+
+
+
 
         /// <summary>
         /// Allows a user to authenticate using their email and password, and returns a JWT if authentication is successful.
