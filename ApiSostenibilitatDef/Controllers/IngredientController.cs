@@ -72,6 +72,35 @@ namespace ApiSostenibilitatDef.Controllers
             return Ok(ingDTO);
         }
 
+        /// <summary>
+        /// Retrieves a list of ingredients by a recipe Id, including the associated vitamins.
+        /// It returns the list of ingredients as IngredientDTO object if found.
+        /// </summary>
+        /// <param name="id">The ID of the racipe to retrieve.</param>
+        /// <returns>Returns a list of IngredientDTO object if there are ingredients in that recipe, or a 404 error if there are no ingredients in that recipe.</returns>
+        [HttpGet("recipe/{id}")]
+        public async Task<ActionResult<List<Ingredient>>> GetByRecipeId(int id)
+        {
+            var ingredients = await _context.Ingredients.Include(n => n.Vitamins).ToListAsync();
+            if (ingredients == null || ingredients.Count == 0)
+            {
+                return NotFound("There are no ingredients in this recipe.");
+            }
+            var recipesDTO = ingredients.Select(n => new IngredientDTO
+            {
+                Id = n.Id,
+                Name = n.Name,
+                EatForms = n.EatForms,
+                Fiber = n.Fiber,
+                Calories = n.Calories,
+                Vitamins = n.Vitamins.Select(v => v.Name).ToList(),
+                Recipes = n.Recipes.Select(r => r.Id).ToList()
+            }
+            ).ToList().Where(r => r.Recipes.Contains(id));
+
+            return Ok(recipesDTO);
+        }
+
 
         /// <summary>
         /// Adds a new ingredient to the database based on the provided IngredientDTO object.
