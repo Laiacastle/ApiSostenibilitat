@@ -71,12 +71,16 @@ namespace ApiSostenibilitatDef.Controllers
             return Ok(dietDTO);
         }
 
+
         /// <summary>
         /// Adds a new diet to the database based on the provided DietDTO object.
         /// The diet includes associated recipes and results that are mapped from the DTO.
         /// </summary>
         /// <param name="dietDTO">The DietDTO object containing the new diet's data.</param>
         /// <returns>Returns a 201 status with the created diet if successful, or a 400 error if there are issues with the provided data.</returns>
+
+        [Authorize(Roles = "Admin,Doctor")]
+
         [HttpPost]
         public async Task<ActionResult<Diet>> Add(DietDTO dietDTO)
         {
@@ -113,12 +117,16 @@ namespace ApiSostenibilitatDef.Controllers
             }
         }
 
+
         /// <summary>
         /// Deletes a specific diet from the database by its ID.
         /// It returns the deleted diet if successful, or a 400 error if the deletion fails.
         /// </summary>
         /// <param name="id">The ID of the diet to delete.</param>
         /// <returns>Returns the deleted diet if successful, or a 400 error if the diet cannot be deleted.</returns>
+
+        [Authorize(Roles = "Admin,Doctor")]
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Diet>> Delete(int id)
         {
@@ -135,6 +143,7 @@ namespace ApiSostenibilitatDef.Controllers
             }
         }
 
+
         /// <summary>
         /// Updates an existing diet by its ID with the data from the provided DietDTO object.
         /// It also updates the associated recipes and results of the diet.
@@ -142,7 +151,9 @@ namespace ApiSostenibilitatDef.Controllers
         /// <param name="dietDTO">The DietDTO object containing the updated diet data.</param>
         /// <param name="id">The ID of the diet to update.</param>
         /// <returns>Returns the updated diet if successful, or a 400 error if the update fails.</returns>
-        [Authorize(Roles = "Admin")]
+    
+        [Authorize(Roles = "Admin,Doctor")]
+
         [HttpPut("{id}")]
         public async Task<ActionResult<Diet>> Update(DietDTO dietDTO, int id)
         {
@@ -189,13 +200,16 @@ namespace ApiSostenibilitatDef.Controllers
             }
         }
 
+
         /// <summary>
         /// Assigns or removes a diet for a specific user. If the diet is already assigned, it will be removed; otherwise, it will be assigned.
         /// </summary>
         /// <param name="id">The ID of the diet to assign or remove.</param>
         /// <param name="idUser">The ID of the user to whom the diet will be assigned or removed.</param>
         /// <returns>Returns a success message indicating whether the diet was assigned or removed, or a 400 error if the operation fails.</returns>
-        [Authorize(Roles = "Admin")]
+
+        [Authorize]
+
         [HttpPut("/Asign/{id}/{idUser}")]
         public async Task<ActionResult> AsignDiet(int id, string idUser)
         {
@@ -229,6 +243,7 @@ namespace ApiSostenibilitatDef.Controllers
             }
             catch (DbUpdateException)
             {
+
                 return BadRequest("Could not assign or remove the diet.");
             }
         }

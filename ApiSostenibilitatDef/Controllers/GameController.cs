@@ -74,6 +74,7 @@ namespace ApiSostenibilitatDef.Controllers
         /// </summary>
         /// <param name="gameDTO">The GameDTO object containing the new game's data.</param>
         /// <returns>Returns a 201 status with the created game if successful, or a 400 error if the provided data is invalid.</returns>
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Game>> Add(GameDTO gameDTO)
         {
@@ -101,12 +102,16 @@ namespace ApiSostenibilitatDef.Controllers
             }
         }
 
+
         /// <summary>
         /// Deletes a specific game from the database by its ID.
         /// It returns the deleted game if successful, or a 400 error if the deletion fails.
         /// </summary>
         /// <param name="id">The ID of the game to delete.</param>
         /// <returns>Returns the deleted game if successful, or a 400 error if the game cannot be deleted.</returns>
+
+        [Authorize(Roles = "Admin")]
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Game>> Delete(int id)
         {
@@ -121,15 +126,16 @@ namespace ApiSostenibilitatDef.Controllers
             {
                 return BadRequest("Could not delete the game.");
             }
-        }
-
-        /// <summary>
+        }        /// <summary>
         /// Updates an existing game by its ID with the data from the provided GameDTO object.
         /// It also updates the associated results of the game.
         /// </summary>
         /// <param name="gameDTO">The GameDTO object containing the updated game data.</param>
         /// <param name="id">The ID of the game to update.</param>
         /// <returns>Returns the updated game if successful, or a 400 error if the update fails.</returns>
+
+        [Authorize(Roles = "Admin")]
+
         [HttpPut("{id}")]
         public async Task<ActionResult<Game>> Update(GameDTO gameDTO, int id)
         {

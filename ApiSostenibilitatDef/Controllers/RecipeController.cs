@@ -4,6 +4,7 @@ using ApiSostenibilitat.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiSostenibilitatDef.Controllers
 {
@@ -67,12 +68,16 @@ namespace ApiSostenibilitatDef.Controllers
             return Ok(recipeDTO);
         }
 
+
         /// <summary>
         /// Adds a new recipe to the database based on the provided RecipeDTO object.
         /// The recipe includes associated ingredients and diets mapped from the DTO.
         /// </summary>
         /// <param name="recipeDTO">The RecipeDTO object containing the new recipe's data.</param>
         /// <returns>Returns a 201 status with the created recipe if successful, or a 400 error if the provided data is invalid.</returns>
+
+        [Authorize(Roles = "Admin,Doctor")]
+
         [HttpPost]
         public async Task<ActionResult<Recipe>> Add(RecipeDTO recipeDTO)
         {
@@ -110,12 +115,16 @@ namespace ApiSostenibilitatDef.Controllers
             }
         }
 
+
         /// <summary>
         /// Deletes a specific recipe from the database by its ID.
         /// It returns the deleted recipe if successful, or a 400 error if the deletion fails.
         /// </summary>
         /// <param name="id">The ID of the recipe to delete.</param>
         /// <returns>Returns the deleted recipe if successful, or a 400 error if the recipe cannot be deleted.</returns>
+
+        [Authorize(Roles = "Admin")]
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Recipe>> Delete(int id)
         {
@@ -132,6 +141,7 @@ namespace ApiSostenibilitatDef.Controllers
             }
         }
 
+
         /// <summary>
         /// Updates an existing recipe by its ID with the data from the provided RecipeDTO object.
         /// It also updates the associated ingredients and diets of the recipe.
@@ -139,6 +149,9 @@ namespace ApiSostenibilitatDef.Controllers
         /// <param name="recipeDTO">The RecipeDTO object containing the updated recipe's data.</param>
         /// <param name="id">The ID of the recipe to update.</param>
         /// <returns>Returns the updated recipe if successful, or a 400 error if the update fails.</returns>
+
+        [Authorize(Roles = "Admin,Doctor")]
+
         [HttpPut("{id}")]
         public async Task<ActionResult<Recipe>> Update(RecipeDTO recipeDTO, int id)
         {
