@@ -13,34 +13,50 @@ namespace ApiSostenibilitatDef.Controllers
     {
         private readonly ApplicationDbContext _context;
         public VitaminController(ApplicationDbContext context) { _context = context; }
+        /// <summary>
+        /// Retrieves all the vitamins from the database.
+        /// It returns a list of Vitamin objects, or a 404 error if no vitamins are found.
+        /// </summary>
+        /// <returns>Returns a list of Vitamin objects if vitamins are found, or a 404 error if not found.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Vitamin>>> GetAll()
         {
             var vitamins = await _context.Vitamins.ToListAsync();
             if (vitamins.Count == 0)
             {
-                return NotFound("Encara no hi han resultats a la base de dades!");
+                return NotFound("There are no vitamins in the database yet!");
             }
 
             return Ok(vitamins);
         }
 
+        /// <summary>
+        /// Retrieves a specific vitamin by its ID.
+        /// It returns a Vitamin object, or a 404 error if the vitamin is not found.
+        /// </summary>
+        /// <param name="id">The ID of the vitamin to retrieve.</param>
+        /// <returns>Returns the Vitamin object if found, or a 404 error if not found.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Vitamin>> GetById(int id)
         {
             var vitamin = await _context.Vitamins.FirstOrDefaultAsync(n => n.Id == id);
             if (vitamin == null)
             {
-                return NotFound("No s'ha trobat la vitamina");
+                return NotFound("Vitamin not found.");
             }
-            
+
             return Ok(vitamin);
         }
-        //[Authorize(Roles = "Admin")]
+
+        /// <summary>
+        /// Adds a new vitamin to the database.
+        /// The new vitamin data is provided in the request body as a Vitamin object.
+        /// </summary>
+        /// <param name="vitamin">The Vitamin object containing the new vitamin data.</param>
+        /// <returns>Returns a 201 status with the created vitamin if successful, or a 400 error if the data is invalid.</returns>
         [HttpPost]
         public async Task<ActionResult<Vitamin>> Add(Vitamin vitamin)
         {
-            
             try
             {
                 _context.Vitamins.Add(vitamin);
@@ -49,10 +65,16 @@ namespace ApiSostenibilitatDef.Controllers
             }
             catch (DbUpdateException)
             {
-                return BadRequest("Dades erroneas");
+                return BadRequest("Invalid data.");
             }
         }
-        //[Authorize(Roles = "Admin")]
+
+        /// <summary>
+        /// Deletes a specific vitamin from the database by its ID.
+        /// If the vitamin is found, it will be removed and returned.
+        /// </summary>
+        /// <param name="id">The ID of the vitamin to delete.</param>
+        /// <returns>Returns the deleted vitamin if successful, or a 400 error if the deletion fails.</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<Vitamin>> Delete(int id)
         {
@@ -65,10 +87,17 @@ namespace ApiSostenibilitatDef.Controllers
             }
             catch (DbUpdateException)
             {
-                return BadRequest("No s'ha pogut esborrar la vitamina");
+                return BadRequest("Could not delete the vitamin.");
             }
         }
-        //[Authorize(Roles = "Admin")]
+
+        /// <summary>
+        /// Updates an existing vitamin in the database based on the provided Vitamin object and its ID.
+        /// The updated vitamin data is provided in the request body.
+        /// </summary>
+        /// <param name="vitamin">The Vitamin object containing the updated data.</param>
+        /// <param name="id">The ID of the vitamin to update.</param>
+        /// <returns>Returns the updated vitamin if successful, or a 400 error if the update fails.</returns>
         [HttpPut("{id}")]
         public async Task<ActionResult<Vitamin>> Update(Vitamin vitamin, int id)
         {
@@ -76,7 +105,7 @@ namespace ApiSostenibilitatDef.Controllers
 
             if (newVitamin == null)
             {
-                return NotFound("La vitamina no existeix!");
+                return NotFound("Vitamin does not exist!");
             }
 
             newVitamin.Name = vitamin.Name;
@@ -87,7 +116,7 @@ namespace ApiSostenibilitatDef.Controllers
             }
             catch (DbUpdateException)
             {
-                return BadRequest("No s'ha pogut fer l'update");
+                return BadRequest("Update failed.");
             }
         }
     }
