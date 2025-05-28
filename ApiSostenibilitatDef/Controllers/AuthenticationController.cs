@@ -123,6 +123,7 @@ namespace ApiSostenibilitat.Controllers
         public async Task<IActionResult> DoctorRegister([FromBody] RegisterDTO model)
         {
             var user = new User { Name = model.Name, Surname = model.Surname, UserName = model.UserName, Email = model.Email, Weight = model.Weight, Age = model.Age, HoursSleep = model.HoursSleep };
+
             switch (model.Exercise)
             {
                 case "Molt": user.Exercise = ExerciciEnum.Molt; break;

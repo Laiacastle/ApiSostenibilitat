@@ -4,6 +4,7 @@ using ApiSostenibilitat.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiSostenibilitatDef.Controllers
 {
@@ -71,12 +72,16 @@ namespace ApiSostenibilitatDef.Controllers
             return Ok(ingDTO);
         }
 
+
         /// <summary>
         /// Adds a new ingredient to the database based on the provided IngredientDTO object.
         /// The ingredient includes associated vitamins and recipes mapped from the DTO.
         /// </summary>
         /// <param name="ingDTO">The IngredientDTO object containing the new ingredient's data.</param>
         /// <returns>Returns a 201 status with the created ingredient if successful, or a 400 error if the provided data is invalid.</returns>
+
+        [Authorize(Roles = "Admin,Doctor")]
+
         [HttpPost]
         public async Task<ActionResult<Ingredient>> Add(IngredientDTO ingDTO)
         {
@@ -114,12 +119,16 @@ namespace ApiSostenibilitatDef.Controllers
             }
         }
 
+
         /// <summary>
         /// Deletes a specific ingredient from the database by its ID.
         /// It returns the deleted ingredient if successful, or a 400 error if the deletion fails.
         /// </summary>
         /// <param name="id">The ID of the ingredient to delete.</param>
         /// <returns>Returns the deleted ingredient if successful, or a 400 error if the ingredient cannot be deleted.</returns>
+
+        [Authorize(Roles = "Admin")]
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Ingredient>> Delete(int id)
         {
@@ -136,6 +145,7 @@ namespace ApiSostenibilitatDef.Controllers
             }
         }
 
+
         /// <summary>
         /// Updates an existing ingredient by its ID with the data from the provided IngredientDTO object.
         /// It also updates the associated vitamins and recipes of the ingredient.
@@ -143,6 +153,9 @@ namespace ApiSostenibilitatDef.Controllers
         /// <param name="ingDTO">The IngredientDTO object containing the updated ingredient's data.</param>
         /// <param name="id">The ID of the ingredient to update.</param>
         /// <returns>Returns the updated ingredient if successful, or a 400 error if the update fails.</returns>
+
+        [Authorize(Roles = "Admin,Doctor")]
+
         [HttpPut("{id}")]
         public async Task<ActionResult<Ingredient>> Update(IngredientDTO ingDTO, int id)
         {

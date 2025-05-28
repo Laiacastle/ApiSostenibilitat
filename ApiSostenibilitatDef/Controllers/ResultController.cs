@@ -4,6 +4,7 @@ using ApiSostenibilitat.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiSostenibilitatDef.Controllers
 {
@@ -69,12 +70,16 @@ namespace ApiSostenibilitatDef.Controllers
             return Ok(resultDTO);
         }
 
+
         /// <summary>
         /// Adds a new result to the database based on the provided ResultDTO object. 
         /// It includes the user, game, and diet details by fetching them from their respective tables using the IDs from the DTO.
         /// </summary>
         /// <param name="resultDTO">The ResultDTO object containing the new result's data.</param>
         /// <returns>Returns a 201 status with the created result if successful, or a 400 error if the provided data is invalid.</returns>
+
+        [Authorize]
+
         [HttpPost]
         public async Task<ActionResult<Result>> Add(ResultDTO resultDTO)
         {
@@ -103,12 +108,16 @@ namespace ApiSostenibilitatDef.Controllers
             }
         }
 
+
         /// <summary>
         /// Deletes a specific result from the database by its ID.
         /// It returns the deleted result if successful, or a 400 error if the deletion fails.
         /// </summary>
         /// <param name="id">The ID of the result to delete.</param>
         /// <returns>Returns the deleted result if successful, or a 400 error if the result cannot be deleted.</returns>
+
+        [Authorize(Roles = "Admin")]
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Result>> Delete(int id)
         {
@@ -125,6 +134,7 @@ namespace ApiSostenibilitatDef.Controllers
             }
         }
 
+
         /// <summary>
         /// Updates an existing result in the database based on the provided ResultDTO object and result ID. 
         /// It also updates the associated user, game, and diet details.
@@ -132,6 +142,9 @@ namespace ApiSostenibilitatDef.Controllers
         /// <param name="resultDTO">The ResultDTO object containing the updated result's data.</param>
         /// <param name="id">The ID of the result to update.</param>
         /// <returns>Returns the updated result if successful, or a 400 error if the update fails.</returns>
+
+        [Authorize]
+
         [HttpPut("{id}")]
         public async Task<ActionResult<Result>> Update(ResultDTO resultDTO, int id)
         {
