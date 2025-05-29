@@ -217,6 +217,62 @@ namespace ApiSostenibilitat.Controllers
             return Ok(CreateToken(claims.ToArray()));
         }
 
+        /// Updates an existing user by its ID with the data from the provided UserDTO object.
+        /// It also updates the associated results of the game.
+        /// </summary>
+        /// <param name="userDTO">The UserDTO object containing the updated user data.</param>
+        /// <param name="id">The ID of the user to update.</param>
+        /// <returns>Returns the updated user if successful, or a 400 error if the update fails.</returns>
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<User>> Update(UserDTO userDTO, string id)
+        {
+            var user = await _context.Users.Include(i => i.Results).FirstOrDefaultAsync(n => n.Id == id);
+
+            if (user == null)
+            {
+                return NotFound("User does not exist.");
+            }
+
+            user.Name = userDTO.Name;
+            user.Surname = userDTO.Surname;
+            user.Email = userDTO.Email;
+            user.Weight = userDTO.Weight;
+            user.HoursSleep = userDTO.HoursSleep;
+            
+            
+            switch (userDTO.Exercise)
+            {
+                case "Poc": user.Exercise = ExerciciEnum.Poc;break;
+                case "Mig": user.Exercise = ExerciciEnum.Mig;break;
+                case "Molt": user.Exercise= ExerciciEnum.Molt;break;
+                default: user.Exercise = ExerciciEnum.Res;break;
+
+            }
+            user.Diet = await _context.Diets.FirstOrDefaultAsync(d=>d.Name == userDTO.Diet);
+
+            // Update the results
+            user.Results.Clear();
+            foreach (var rId in userDTO.Results)
+            {
+                var result = await _context.Results.FindAsync(rId);
+                if (result != null)
+                {
+                    user.Results.Add(result);
+                }
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(user);
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("Update failed.");
+            }
+        }
+
         /// <summary>
         /// Creates a JWT token for the authenticated user based on the provided claims.
         /// </summary>
