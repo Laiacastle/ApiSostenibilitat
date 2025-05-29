@@ -79,24 +79,27 @@ namespace ApiSostenibilitatDef.Controllers
         /// <param name="id">The ID of the racipe to retrieve.</param>
         /// <returns>Returns a list of IngredientDTO object if there are ingredients in that recipe, or a 404 error if there are no ingredients in that recipe.</returns>
         [HttpGet("recipe/{id}")]
-        public async Task<ActionResult<List<Ingredient>>> GetByRecipeId(int id)
+        public async Task<ActionResult<List<RecipeDTO>>> GetByRecipeId(int id)
         {
-            var ingredients = await _context.Ingredients.Include(n => n.Vitamins).ToListAsync();
+            var ingredients = await _context.Ingredients
+                .Include(r => r.Vitamins)
+                .Where(r => r.Recipes.Any(d => d.Id == id))
+                .ToListAsync();
+
             if (ingredients == null || ingredients.Count == 0)
             {
                 return NotFound("There are no ingredients in this recipe.");
             }
-            var recipesDTO = ingredients.Select(n => new IngredientDTO
+
+            var recipesDTO = ingredients.Select(r => new IngredientDTO
             {
-                Id = n.Id,
-                Name = n.Name,
-                EatForms = n.EatForms,
-                Fiber = n.Fiber,
-                Calories = n.Calories,
-                Vitamins = n.Vitamins.Select(v => v.Name).ToList(),
-                Recipes = n.Recipes.Select(r => r.Id).ToList()
-            }
-            ).ToList().Where(r => r.Recipes.Contains(id));
+                Id = r.Id,
+                Name = r.Name,
+                EatForms = r.EatForms,
+                Fiber = r.Fiber,
+                Calories = r.Calories,
+                Vitamins = r.Vitamins.Select(v => v.Name).ToList()
+            }).ToList();
 
             return Ok(recipesDTO);
         }
