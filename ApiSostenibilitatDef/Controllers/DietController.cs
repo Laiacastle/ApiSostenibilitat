@@ -71,6 +71,38 @@ namespace ApiSostenibilitatDef.Controllers
             return Ok(dietDTO);
         }
 
+        /// <summary>
+        /// Retrieves a list of diets by a user Id, including the associated results and recipes.
+        /// It returns the list of diets as DietDTO object if found.
+        /// </summary>
+        /// <param name="id">The ID of the user to retrieve.</param>
+        /// <returns>Returns a list of DietDTO object if the user has diets, or a 404 error if the user has no diets.</returns>
+        [HttpGet("recipe/{id}")]
+        public async Task<ActionResult<List<DietDTO>>> GetByUserId(string id)
+        {
+            var diet = await _context.Diets
+                .Include(r => r.Results)
+                .Include(d=>d.Recipes)
+                .Where(r => r.UserId == id)
+                .FirstOrDefaultAsync();
+
+            if (diet == null)
+            {
+                return NotFound("The user has no diets.");
+            }
+
+            var recipesDTO = new DietDTO
+            {
+                Id = diet.Id,
+                Name = diet.Name,
+                Characteristics = diet.Characteristics != null ? diet.Characteristics : "No info",
+                UserId = id,
+                Recipes = diet.Recipes.Select(u => u.Id).ToList(),
+                Results = diet.Results.Select(r => r.Date).ToList()
+            };
+
+            return Ok(recipesDTO);
+        }
 
         /// <summary>
         /// Adds a new diet to the database based on the provided DietDTO object.

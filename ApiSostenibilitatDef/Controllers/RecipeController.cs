@@ -75,22 +75,29 @@ namespace ApiSostenibilitatDef.Controllers
         /// <param name="id">The ID of the diet to retrieve.</param>
         /// <returns>Returns a list of RecipeDTO object if there are recipes found, or a 404 error if there are no recipes in that diet.</returns>
         [HttpGet("diet/{id}")]
-        public async Task<ActionResult<List<Recipe>>> GetByDietId(int id)
+        public async Task<ActionResult<List<RecipeDTO>>> GetByDietId(int id)
         {
-            var recipes = await _context.Recipes.Include(n => n.Diets).Include(n => n.Ingredients).ToListAsync();
+
+
+            var recipes = await _context.Recipes
+                .Include(r => r.Diets)
+                .Include(r => r.Ingredients)
+                .Where(r => r.Diets.Any(d => d.Id == id))
+                .ToListAsync();
+
             if (recipes == null || recipes.Count == 0)
             {
                 return NotFound("There are no recipes in this diet.");
             }
+
             var recipesDTO = recipes.Select(r => new RecipeDTO
             {
                 Id = r.Id,
                 Name = r.Name,
                 Description = r.Description,
-                Ingredients = r.Ingredients.Select(v => v.Name).ToList(),
-                Diets = r.Diets.Select(r => r.Id).ToList()
-            }
-            ).ToList().Where(r=> r.Diets.Contains(id));
+                Ingredients = r.Ingredients.Select(i => i.Name).ToList(),
+                Diets = r.Diets.Select(d => d.Id).ToList()
+            }).ToList();
 
             return Ok(recipesDTO);
         }
